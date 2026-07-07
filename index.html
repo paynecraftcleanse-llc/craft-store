@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craft & Cleanse</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <!-- Snipcart Cart Styling Assets (Runs the sliding cart) -->
+    <link rel="stylesheet" href="https://snipcart.com" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding-bottom: 60px; }
+        
+        /* Navigation Layout */
+        nav { width: 92%; margin: 25px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); box-shadow: 0 0 30px rgba(232,193,108,.2); }
+        .logo { font-family: "Cinzel", serif; font-size: 25px; color: #e8c16c; text-shadow: 0 0 20px #e8c16c; text-decoration: none; }
+        .cross { color: #e8c16c; font-size: 30px; margin-right: 10px; }
+        .nav-links { display: flex; align-items: center; gap: 35px; }
+        nav a { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; cursor: pointer; }
+        nav a:hover { color: #e8c16c; }
+        .brand-mark { font-family: "Cinzel", serif; font-size: 26px; font-weight: bold; color: #e8c16c; text-shadow: 0 0 15px #e8c16c; padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(232,193,108,.35); background: rgba(232,193,108,.08); }
+        .cart-icon-btn { position: relative; background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; font-family: "Inter", sans-serif; }
+        .cart-icon-btn:hover { color: #e8c16c; }
+
+        /* Structural Container */
+        .container { width: 92%; max-width: 1200px; margin: 0 auto; }
+        .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin: 60px auto; }
+        h1 { font-family: "Cormorant Garamond", serif; font-size: 4.5rem; color: #e8c16c; text-shadow: 0 0 25px rgba(232,193,108,.7); line-height: 1.1; }
+        .owner { margin-top: 15px; color: #ddd; font-size: 0.9rem; letter-spacing: 1px; }
+        .text { margin-top: 20px; color: #bbb; line-height: 1.6; }
+        
+        /* Interactive Scrolling Button */
+        .store-button { display: inline-block; margin-top: 30px; padding: 16px 45px; border-radius: 50px; border: 1px solid #e8c16c; background: rgba(232,193,108,.1); color: white; font-size: 1.05rem; text-decoration: none; box-shadow: 0 0 35px rgba(232,193,108,.5); transition: .3s; cursor: pointer; }
+        .store-button:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(232,193,108,.8); }
+        
+        .glass-panel { padding: 15px; border-radius: 35px; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border: 1px solid rgba(232,193,108,.3); box-shadow: 0 0 50px rgba(232,193,108,.35); text-align: center; }
+        .hero-img { width: 100%; height: 380px; object-fit: cover; border-radius: 25px; background: #111; }
+
+        /* Store Marketplace Grid Layout */
+        .section-title { text-align: center; font-family: "Cinzel", serif; color: #e8c16c; font-size: 2.5rem; margin: 80px 0 40px 0; text-shadow: 0 0 20px rgba(232,193,108,0.4); }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-bottom: 80px; }
+        .product-card { background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); padding: 25px; border-radius: 25px; text-align: center; backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .product-img { width: 100%; height: 240px; object-fit: cover; border-radius: 15px; background: #111; }
+        .product-card h3 { font-family: "Cormorant Garamond", serif; font-size: 2.2rem; color: #e8c16c; margin: 15px 0 5px 0; }
+        .product-desc { color: #bbb; font-size: 0.95rem; margin-bottom: 15px; min-height: 45px; }
+        .price { font-size: 1.4rem; color: #fff; margin-bottom: 15px; font-weight: 600; }
+        .tax-shipping-note { display: block; font-size: 0.8rem; color: #aaa; font-weight: 400; margin-top: 4px; }
+        
+        /* Variant Dropdown Selection Styling */
+        .variant-selector { display: block; width: 100%; padding: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,0.3); border-radius: 10px; color: #f5e7c8; font-family: "Inter", sans-serif; font-size: 0.95rem; outline: none; }
+        .variant-selector option { background: #05060b; color: #f5e7c8; }
+
+        /* Cart Add Mechanism */
+        .buy-btn { display: inline-block; width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; text-decoration: none; font-weight: 600; transition: .3s; cursor: pointer; }
+        .buy-btn:hover { background: #e8c16c; color: #05060b; box-shadow: 0 0 25px #e8c16c; transform: scale(1.02); }
+
+        /* Scripture Layout block */
+        .quote { width: 80%; max-width: 900px; margin: 60px auto; text-align: center; font-family: "Cormorant Garamond", serif; font-size: 2rem; font-style: italic; line-height: 1.4; }
+        .quote::before { content: "“"; font-size: 100px; color: #e8c16c; text-shadow: 0 0 35px #e8c16c; display: block; height: 40px; margin-bottom: 20px; }
+        .verse-ref { display: block; margin-top: 15px; font-family: "Cinzel", serif; font-size: 1.1rem; color: #e8c16c; text-shadow: 0 0 20px #e8c16c; }
+
+        /* Informational Footer Contact Layout */
+        .contact-bar { width: 92%; margin: 45px auto; padding: 25px; display: flex; justify-content: space-around; align-items: center; background: rgba(255,255,255,.05); backdrop-filter: blur(25px); border-radius: 35px; border: 1px solid rgba(232,193,108,.2); }
+        .contact-item { text-align: center; color: #ddd; font-size: 0.9rem; }
+        .contact-item i { font-size: 25px; color: #e8c16c; margin-bottom: 8px; }
+        .big-cross { font-size: 45px; color: #e8c16c; text-shadow: 0 0 40px #e8c16c; }
+
+        @media(max-width: 800px) {
+            .hero { grid-template-columns: 1fr; text-align: center; }
+            .contact-bar { flex-direction: column; gap: 25px; text-align: center; }
+            .big-cross { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#" class="logo"><span class="cross">✝</span>Craft & Cleanse</a>
+    <div class="nav-links">
+        <a href="#shop">Store</a>
+        <!-- Snipcart Native Account Login/Order History Action Link -->
+        <a class="snipcart-customer-signin"><i class="fa-solid fa-user" style="margin-right: 8px;"></i>My Account</a>
+        <!-- Sliding Cart Trigger Badge Container -->
+        <button class="snipcart-checkout cart-icon-btn"><i class="fa-solid fa-shopping-cart" style="margin-right: 8px;"></i>Cart (<span class="snipcart-items-count">0</span>)</button>
+        <div class="brand-mark">C&C</div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Main LLC Hero Header Section -->
+    <section class="hero">
+        <div>
+            <h1>Craft & Cleanse</h1>
+            <p class="owner">Owned by PAYNE CRAFT & CLEANSE LLC</p>
+            <p class="text">Handmade candles and true soaps created with careful craftsmanship. Free from synthetic chemical detergents and industrial surfactants.</p>
+            <a class="store-button" href="#shop">Browse Market ↓</a>
+        </div>
+        <div class="glass-panel">
+            <img class="hero-img" src="hero-products.jpg" alt="Handmade items Showcase">
+        </div>
+    </section>
+
+    <!-- Scripture Quote Reflection Divider -->
+    <div class="quote">
+        Make it your ambition to lead a quiet life: You should mind your own business and work with your hands.
+        <span class="verse-ref">— 1 Thessalonians 4:11</span>
+    </div>
+
+    <!-- Active Storefront Target Anchor -->
+    <h2 id="shop" class="section-title">The Marketplace</h2>
+    
+    <section class="market-grid">
+        
+        <!-- Product Item 1: Handmade Soap Box -->
+        <div class="product-card">
+            <img class="product-img" src="soap.jpg" alt="Natural Soap Bar">
+            <h3>Handmade Soap</h3>
+            <p class="product-desc">Authentic, traditional kettle-cooked soap bars formulated with natural nourishing oils.</p>
+            <div class="price">$25.00 <span class="tax-shipping-note">Includes 6% MI Tax (+ $15 Shipping)</span></div>
+            
+            <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.85rem; color:#e8c16c;">Select Scent Variation:</label>
+            <select id="soap-scent-selector" class="variant-selector" onchange="updateSnipcartVariant('soap', this.value)">
+                <option value="Lavender">Lavender</option>
+                <option value="Eucalyptus">Eucalyptus</option>
+                <option value="Unscented">Unscented</option>
+            </select>
+            
+            <!-- Snipcart Secure Add-to-Cart Trigger Anchoring Variables -->
+            <button id="soap-buy-btn" class="snipcart-add-item buy-btn"
+                data-item-id="handmade-soap"
+                data-item-name="Handmade Soap"
+                data-item-price="25.00"
+                data-item-url="/"
+                data-item-description="Authentic kettle-cooked soap bars."
+                data-item-custom1-name="Scent"
+                data-item-custom1-value="Lavender">
+                Add To Cart
+            </button>
+        </div>
+
+        <!-- Product Item 2: Artisan Candle Box -->
+        <div class="product-card">
