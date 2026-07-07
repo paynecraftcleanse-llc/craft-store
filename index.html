@@ -81,16 +81,13 @@
     <a href="#" class="logo"><span class="cross">✝</span>Craft & Cleanse</a>
     <div class="nav-links">
         <a href="#shop">Store</a>
-        <!-- Snipcart Native Account Login/Order History Action Link -->
         <a class="snipcart-customer-signin"><i class="fa-solid fa-user" style="margin-right: 8px;"></i>My Account</a>
-        <!-- Sliding Cart Trigger Badge Container -->
         <button class="snipcart-checkout cart-icon-btn"><i class="fa-solid fa-shopping-cart" style="margin-right: 8px;"></i>Cart (<span class="snipcart-items-count">0</span>)</button>
         <div class="brand-mark">C&C</div>
     </div>
 </nav>
 
 <div class="container">
-    <!-- Main LLC Hero Header Section -->
     <section class="hero">
         <div>
             <h1>Craft & Cleanse</h1>
@@ -103,13 +100,11 @@
         </div>
     </section>
 
-    <!-- Scripture Quote Reflection Divider -->
     <div class="quote">
         Make it your ambition to lead a quiet life: You should mind your own business and work with your hands.
         <span class="verse-ref">— 1 Thessalonians 4:11</span>
     </div>
 
-    <!-- Active Storefront Target Anchor -->
     <h2 id="shop" class="section-title">The Marketplace</h2>
     
     <section class="market-grid">
@@ -128,7 +123,6 @@
                 <option value="Unscented">Unscented</option>
             </select>
             
-            <!-- Snipcart Secure Add-to-Cart Trigger Anchoring Variables -->
             <button id="soap-buy-btn" class="snipcart-add-item buy-btn"
                 data-item-id="handmade-soap"
                 data-item-name="Handmade Soap"
@@ -140,6 +134,55 @@
                 Add To Cart
             </button>
         </div>
-
         <!-- Product Item 2: Artisan Candle Box -->
         <div class="product-card">
+            <img class="product-img" src="candle.jpg" alt="Artisan Candle">
+            <h3>Artisan Candle</h3>
+            <p class="product-desc">Velvety, clean-burning candles blended with deep, resonant aromatics to fill your living space.</p>
+            <div class="price">$25.00 <span class="tax-shipping-note">Includes 6% MI Tax (+ $15 Shipping)</span></div>
+            
+            <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.85rem; color:#e8c16c;">Select Scent Variation:</label>
+            <select id="candle-scent-selector" class="variant-selector" onchange="updateSnipcartVariant('candle', this.value)">
+                <option value="Vanilla Bourbon">Vanilla Bourbon</option>
+                <option value="Sandalwood">Sandalwood</option>
+                <option value="Pine Forest">Pine Forest</option>
+            </select>
+            
+            <button id="candle-buy-btn" class="snipcart-add-item buy-btn"
+                data-item-id="artisan-candle"
+                data-item-name="Artisan Candle"
+                data-item-price="25.00"
+                data-item-url="/"
+                data-item-description="Velvety clean-burning artisan candle."
+                data-item-custom1-name="Scent"
+                data-item-custom1-value="Vanilla Bourbon">
+                Add To Cart
+            </button>
+        </div>
+
+    </section>
+</div>
+
+<div class="contact-bar">
+    <div class="contact-item"><i class="fa-solid fa-envelope"></i><br>payne.craft.cleanse@gmail.com</div>
+    <div class="contact-item"><i class="fa-solid fa-phone"></i><br>+1 (313) 687-7467</div>
+    <div class="big-cross">✝</div>
+    <div class="contact-item"><i class="fa-solid fa-box"></i><br>Ships Nationwide (USPS Only)</div>
+    <div class="contact-item"><i class="fa-brands fa-instagram"></i> <i class="fa-brands fa-facebook"></i><br>gfp.malik & Malik Payne</div>
+</div>
+
+<script>
+    function updateSnipcartVariant(productType, scentValue) {
+        const button = document.getElementById(productType + '-buy-btn');
+        if (button) {
+            button.setAttribute('data-item-custom1-value', scentValue);
+        }
+    }
+</script>
+
+<!-- Snipcart Core Engine Script Insertion Panel -->
+<script async src="https://snipcart.com"></script>
+<div id="snipcart" data-config-modal-style="side" data-api-key="YTMwMzM2YjEtNmZkNy00M2ZmLWJjZjAtNTRjMjZlMzFlZjllNjM4NTU5NTIzMTcwNzE4ODMy" hidden></div>
+
+</body>
+</html>
