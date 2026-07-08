@@ -67,7 +67,7 @@
         const endpoint = isLoginMode ? '/api/login' : '/api/signup';
 
         try {
-            const response = await fetch(`https://craftandcleanse.com${endpoint}`, {
+            const response = await fetch('https://api.craftandcleanse.com' + endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
