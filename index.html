@@ -6,10 +6,6 @@
     <title>Craft & Cleanse</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
-    
-    <!-- Snipcart Cart Styling Assets (Runs the sliding cart) -->
-    <link rel="stylesheet" href="https://snipcart.com" />
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding-bottom: 60px; }
@@ -22,7 +18,7 @@
         nav a { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; cursor: pointer; }
         nav a:hover { color: #e8c16c; }
         .brand-mark { font-family: "Cinzel", serif; font-size: 26px; font-weight: bold; color: #e8c16c; text-shadow: 0 0 15px #e8c16c; padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(232,193,108,.35); background: rgba(232,193,108,.08); }
-        .cart-icon-btn { position: relative; background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; font-family: "Inter", sans-serif; }
+        .cart-icon-btn { position: relative; background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; font-family: "Inter", sans-serif; text-decoration: none; }
         .cart-icon-btn:hover { color: #e8c16c; }
 
         /* Structural Container */
@@ -32,10 +28,9 @@
         .owner { margin-top: 15px; color: #ddd; font-size: 0.9rem; letter-spacing: 1px; }
         .text { margin-top: 20px; color: #bbb; line-height: 1.6; }
         
-        /* Interactive Scrolling Button */
+        /* Interactive Buttons */
         .store-button { display: inline-block; margin-top: 30px; padding: 16px 45px; border-radius: 50px; border: 1px solid #e8c16c; background: rgba(232,193,108,.1); color: white; font-size: 1.05rem; text-decoration: none; box-shadow: 0 0 35px rgba(232,193,108,.5); transition: .3s; cursor: pointer; }
         .store-button:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(232,193,108,.8); }
-        
         .glass-panel { padding: 15px; border-radius: 35px; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border: 1px solid rgba(232,193,108,.3); box-shadow: 0 0 50px rgba(232,193,108,.35); text-align: center; }
         .hero-img { width: 100%; height: 380px; object-fit: cover; border-radius: 25px; background: #111; }
 
@@ -52,17 +47,13 @@
         /* Variant Dropdown Selection Styling */
         .variant-selector { display: block; width: 100%; padding: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,0.3); border-radius: 10px; color: #f5e7c8; font-family: "Inter", sans-serif; font-size: 0.95rem; outline: none; }
         .variant-selector option { background: #05060b; color: #f5e7c8; }
-
-        /* Cart Add Mechanism */
         .buy-btn { display: inline-block; width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; text-decoration: none; font-weight: 600; transition: .3s; cursor: pointer; }
         .buy-btn:hover { background: #e8c16c; color: #05060b; box-shadow: 0 0 25px #e8c16c; transform: scale(1.02); }
 
-        /* Scripture Layout block */
+        /* Scripture & Layout blocks */
         .quote { width: 80%; max-width: 900px; margin: 60px auto; text-align: center; font-family: "Cormorant Garamond", serif; font-size: 2rem; font-style: italic; line-height: 1.4; }
         .quote::before { content: "“"; font-size: 100px; color: #e8c16c; text-shadow: 0 0 35px #e8c16c; display: block; height: 40px; margin-bottom: 20px; }
         .verse-ref { display: block; margin-top: 15px; font-family: "Cinzel", serif; font-size: 1.1rem; color: #e8c16c; text-shadow: 0 0 20px #e8c16c; }
-
-        /* Informational Footer Contact Layout */
         .contact-bar { width: 92%; margin: 45px auto; padding: 25px; display: flex; justify-content: space-around; align-items: center; background: rgba(255,255,255,.05); backdrop-filter: blur(25px); border-radius: 35px; border: 1px solid rgba(232,193,108,.2); }
         .contact-item { text-align: center; color: #ddd; font-size: 0.9rem; }
         .contact-item i { font-size: 25px; color: #e8c16c; margin-bottom: 8px; }
@@ -82,11 +73,10 @@
     <div class="nav-links">
         <a href="#shop">Store</a>
         <a href="account.html"><i class="fa-solid fa-user" style="margin-right: 8px;"></i>My Account</a>
-        <a href="cart.html" class="cart-icon-btn" style="text-decoration:none;"><i class="fa-solid fa-shopping-cart" style="margin-right: 8px;"></i>Cart (<span id="cart-badge-count">0</span>)</a>
+        <a href="cart.html" class="cart-icon-btn"><i class="fa-solid fa-shopping-cart" style="margin-right: 8px;"></i>Cart (<span id="cart-badge-count">0</span>)</a>
         <div class="brand-mark">C&C</div>
     </div>
 </nav>
-
 
 <div class="container">
     <section class="hero">
@@ -109,7 +99,6 @@
     <h2 id="shop" class="section-title">The Marketplace</h2>
     
     <section class="market-grid">
-        
         <!-- Product Item 1: Handmade Soap Box -->
         <div class="product-card">
             <img class="product-img" src="soap.jpg" alt="Natural Soap Bar">
@@ -118,22 +107,13 @@
             <div class="price">$25.00 <span class="tax-shipping-note">Includes 6% MI Tax (+ $15 Shipping)</span></div>
             
             <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.85rem; color:#e8c16c;">Select Scent Variation:</label>
-            <select id="soap-scent-selector" class="variant-selector" onchange="updateSnipcartVariant('soap', this.value)">
-                <option value="Lavender">Lavender</option>
-                <option value="Eucalyptus">Eucalyptus</option>
-                <option value="Unscented">Unscented</option>
+            <select id="soap-scent-selector" class="variant-selector">
+                <option value="Coconut Vanilla Sandalwood">Coconut Vanilla Sandalwood</option>
+                <option value="Blueberry Lemon">Blueberry Lemon</option>
+                <option value="Peachy Apple">Peachy Apple</option>
             </select>
             
-            <button id="soap-buy-btn" class="snipcart-add-item buy-btn"
-                data-item-id="handmade-soap"
-                data-item-name="Handmade Soap"
-                data-item-price="25.00"
-                data-item-url="/"
-                data-item-description="Authentic kettle-cooked soap bars."
-                data-item-custom1-name="Scent"
-                data-item-custom1-value="Lavender">
-                Add To Cart
-            </button>
+            <button class="buy-btn" onclick="executeLocalCartAddition('handmade-soap', 'Handmade Soap', 'soap-scent-selector')">Add To Cart</button>
         </div>
         <!-- Product Item 2: Artisan Candle Box -->
         <div class="product-card">
@@ -143,24 +123,14 @@
             <div class="price">$25.00 <span class="tax-shipping-note">Includes 6% MI Tax (+ $15 Shipping)</span></div>
             
             <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.85rem; color:#e8c16c;">Select Scent Variation:</label>
-            <select id="candle-scent-selector" class="variant-selector" onchange="updateSnipcartVariant('candle', this.value)">
-                <option value="Vanilla Bourbon">Vanilla Bourbon</option>
-                <option value="Sandalwood">Sandalwood</option>
-                <option value="Pine Forest">Pine Forest</option>
+            <select id="candle-scent-selector" class="variant-selector">
+                <option value="Coconut Vanilla Sandalwood">Coconut Vanilla Sandalwood</option>
+                <option value="Blueberry Lemon">Blueberry Lemon</option>
+                <option value="Peachy Apple">Peachy Apple</option>
             </select>
             
-            <button id="candle-buy-btn" class="snipcart-add-item buy-btn"
-                data-item-id="artisan-candle"
-                data-item-name="Artisan Candle"
-                data-item-price="25.00"
-                data-item-url="/"
-                data-item-description="Velvety clean-burning artisan candle."
-                data-item-custom1-name="Scent"
-                data-item-custom1-value="Vanilla Bourbon">
-                Add To Cart
-            </button>
+            <button class="buy-btn" onclick="executeLocalCartAddition('artisan-candle', 'Artisan Candle', 'candle-scent-selector')">Add To Cart</button>
         </div>
-
     </section>
 </div>
 
@@ -172,18 +142,59 @@
     <div class="contact-item"><i class="fa-brands fa-instagram"></i> <i class="fa-brands fa-facebook"></i><br>gfp.malik & Malik Payne</div>
 </div>
 
+<!-- Custom JavaScript Framework for Core Shopping Functionality -->
 <script>
-    function updateSnipcartVariant(productType, scentValue) {
-        const button = document.getElementById(productType + '-buy-btn');
-        if (button) {
-            button.setAttribute('data-item-custom1-value', scentValue);
+    function executeLocalCartAddition(productId, productName, selectorElementId) {
+        const chosenScent = document.getElementById(selectorElementId).value;
+        
+        // Pull down existing shopping cart file configurations out of browser memory
+        let currentCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
+        
+        // Analyze if the exact product with that exact flavor already exists in the bag
+        const matchingIndex = currentCart.findIndex(item => item.id === productId && item.scent === chosenScent);
+        
+        if (matchingIndex > -1) {
+            currentCart[matchingIndex].quantity += 1;
+        } else {
+            currentCart.push({
+                id: productId,
+                name: productName,
+                scent: chosenScent,
+                quantity: 1,
+                price: 25.00
+            });
         }
+        
+        // Lock the snapshot back into browser storage
+        localStorage.setItem('cc_cart_store', JSON.stringify(currentCart));
+        updateCartBadgeMetric();
+        
+        // Silently upload cart updates to account database if user is actively logged in
+        syncCartWithCloudflareDatabase(currentCart);
+        
+        alert(productName + ' (' + chosenScent + ') successfully added to your Cart!');
     }
+
+    function updateCartBadgeMetric() {
+        const currentCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
+        let totalCount = 0;
+        currentCart.forEach(item => { totalCount += item.quantity; });
+        document.getElementById('cart-badge-count').innerText = totalCount;
+    }
+
+    async function syncCartWithCloudflareDatabase(cartData) {
+        const userId = localStorage.getItem('cc_user_id');
+        if (!userId) return; // Skip database save if browsing as guest
+
+        await fetch('https://craftandcleanse.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, items: cartData })
+        });
+    }
+
+    // Automatically check memory and render correct badge count on site entry
+    window.addEventListener('DOMContentLoaded', updateCartBadgeMetric);
 </script>
-
-<!-- Snipcart Core Engine Script Insertion Panel -->
-<script async src="https://snipcart.com"></script>
-<div id="snipcart" data-config-modal-style="side" data-api-key="YTMwMzM2YjEtNmZkNy00M2ZmLWJjZjAtNTRjMjZlMzFlZjllNjM4NTU5NTIzMTcwNzE4ODMy" hidden></div>
-
 </body>
 </html>
