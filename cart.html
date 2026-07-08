@@ -86,7 +86,7 @@
         if (activeCart.length === 0) return alert('Your cart is empty.');
         
         // FIXED: Explicitly target your running Cloudflare database worker subdomain
-        const response = await fetch('https://api.craftandcleanse.com', {
+        const response = await fetch('https://api.craftandcleanse.com/api/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
