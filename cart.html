@@ -82,10 +82,11 @@
         document.getElementById('txt-final').innerText = `$${grandTotal.toFixed(2)}`;
     }
 
-    async function checkoutViaCustomWorker() {
+        async function checkoutViaCustomWorker() {
         if (activeCart.length === 0) return alert('Your cart is empty.');
         
-        const response = await fetch('https://craftandcleanse.com', {
+        // FIXED: Explicitly target your running Cloudflare database worker subdomain
+        const response = await fetch('https://api.craftandcleanse.com', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -94,13 +95,19 @@
             })
         });
 
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            return alert(errData.error || 'Stripe connection error.');
+        }
+
         const session = await response.json();
         if (session.url) {
-            window.location.href = session.url; // Route to secure Stripe checkout screen
+            window.location.href = session.url; // Route straight to secure Stripe checkout screen
         } else {
             alert('Stripe initialization failed.');
         }
     }
+
 
     window.addEventListener('DOMContentLoaded', loadCartData);
 </script>
