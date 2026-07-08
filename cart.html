@@ -46,7 +46,7 @@
 <script>
     let activeCart = [];
 
-    function loadCartData() {
+        function loadCartData() {
         activeCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
         const container = document.getElementById('cart-items-target');
         container.innerHTML = '';
@@ -71,13 +71,15 @@
             container.appendChild(div);
         });
 
-        const taxAmount = totalAmount - (totalAmount / 1.06);
+        // EXCLUSIVE TAX MATH: Clean 6% computed strictly on the items subtotal ($4.50)
+        const taxAmount = totalAmount * 0.06; 
         const shippingFee = activeCart.length > 0 ? 15.00 : 0.00;
+        const grandTotal = totalAmount + taxAmount + shippingFee;
 
         document.getElementById('txt-subtotal').innerText = `$${totalAmount.toFixed(2)}`;
         document.getElementById('txt-tax').innerText = `$${taxAmount.toFixed(2)}`;
         document.getElementById('txt-shipping').innerText = `$${shippingFee.toFixed(2)}`;
-        document.getElementById('txt-final').innerText = `$${(totalAmount + shippingFee).toFixed(2)}`;
+        document.getElementById('txt-final').innerText = `$${grandTotal.toFixed(2)}`;
     }
 
     async function checkoutViaCustomWorker() {
