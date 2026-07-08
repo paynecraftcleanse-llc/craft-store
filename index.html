@@ -186,7 +186,7 @@
         const userId = localStorage.getItem('cc_user_id');
         if (!userId) return; // Skip database save if browsing as guest
 
-        await fetch('https://craftandcleanse.com', {
+        await fetch('https://api.craftandcleanse.com', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, items: cartData })
