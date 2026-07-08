@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C&C Operations Hub</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: #05060b; color: #f5e7c8; font-family: "Inter", sans-serif; padding: 40px; }
+        .auth-panel { max-width: 400px; margin: 100px auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(232,193,108,0.2); padding: 35px; border-radius: 20px; text-align: center; display: none; }
+        .dashboard-panel { display: none; }
+        .active { display: block; }
+        h1, h2 { font-family: "Cinzel", serif; color: #e8c16c; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid rgba(232,193,108,0.2); border-radius: 10px; color: white; }
+        .btn { width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; font-weight: 600; cursor: pointer; }
+        .order-table { width: 100%; border-collapse: collapse; margin-top: 30px; background: rgba(255,255,255,0.01); border: 1px solid rgba(232,193,108,0.15); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(232,193,108,0.1); }
+        th { background: rgba(232,193,108,0.08); color: #e8c16c; font-family: "Cinzel", serif; }
+        .badge { padding: 5px 12px; border-radius: 15px; background: rgba(232,193,108,0.2); color: #e8c16c; font-size: 0.8rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<!-- Secret Admin Entrance -->
+<div id="admin-auth" class="auth-panel active">
+    <h2>Operations Login</h2>
+    <input type="password" id="admin-secret-pass" placeholder="Enter Master System Secret">
+    <button class="btn" onclick="validateAdminAccessPass()">Access Dashboard</button>
+</div>
+
+<!-- Private Shipping & Invoicing Grid -->
+<div id="admin-dashboard" class="dashboard-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h1>Fulfillment Command Board</h1>
+        <button class="btn" style="width:auto; padding:10px 25px;" onclick="logOutAdmin()">Lock Console</button>
+    </div>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Purchased Items</th>
+                <th>Gross Total Paid</th>
+                <th>USPS Shipping Address</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="admin-orders-rows">
+            <!-- Data dynamically populated from Cloudflare D1 -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function validateAdminAccessPass() {
+        const pass = document.getElementById('admin-secret-pass').value;
+        if (pass === "MTPCAROLINAS1712") { // Uses your secure local system password
+            sessionStorage.setItem('cc_admin_authed', 'true');
+            showDashboardPanel();
+        } else {
+            alert('Access Denied. Incorrect Administrative Key.');
+        }
+    }
+
+    async function showDashboardPanel() {
+        document.getElementById('admin-auth').classList.remove('active');
+        document.getElementById('admin-dashboard').classList.add('active');
+
+        const res = await fetch('https://craftandcleanse.com');
+        const data = await res.json();
+        const container = document.getElementById('admin-orders-rows');
+        container.innerHTML = '';
+
+        if (data.success && data.orders) {
+            data.orders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${order.id}</strong></td>
+                    <td>${order.products_bought}</td>
+                    <td>$${order.total_amount.toFixed(2)}</td>
+                    <td><pre style="font-family:inherit; color:#fff;">${order.shipping_address}</pre></td>
+                    <td><span class="badge">${order.status}</span></td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+    }
+
+    function logOutAdmin() {
+        sessionStorage.clear();
+        window.location.reload();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem('cc_admin_authed') === 'true') {
+            showDashboardPanel();
+        }
+    });
+</script>
+</body>
+</html>
