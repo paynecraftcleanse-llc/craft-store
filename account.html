@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C&C Account Portal</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding: 30px 20px; }
+        nav { width: 92%; margin: 0 auto 40px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); }
+        nav a { color: white; text-decoration: none; font-weight: 500; font-family: "Cinzel", serif; }
+        .view-panel { display: none; max-width: 500px; margin: 40px auto; padding: 35px; background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); border-radius: 25px; backdrop-filter: blur(25px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .view-panel.active { display: block; }
+        h2 { font-family: "Cinzel", serif; color: #e8c16c; margin-bottom: 25px; text-shadow: 0 0 15px rgba(232,193,108,0.3); text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,.2); border-radius: 10px; color: white; outline: none; }
+        .btn { width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; font-weight: 600; cursor: pointer; transition: .3s; }
+        .btn:hover { background: #e8c16c; color: #05060b; box-shadow: 0 0 25px #e8c16c; }
+        .toggle-lnk { font-size: 0.85rem; margin-top: 15px; color: #aaa; cursor: pointer; text-align: center; }
+        .toggle-lnk span { color: #e8c16c; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html">← Back to Store</a>
+    <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px; font-weight:bold;">Customer Portal</div>
+    <a href="#" id="nav-logout-btn" style="display:none;" onclick="executeUserLogout()">Sign Out</a>
+</nav>
+
+<!-- Auth View Layout -->
+<div id="panel-auth" class="view-panel active">
+    <h2 id="auth-title">Login</h2>
+    <form onsubmit="handleAuthSubmission(event)">
+        <input type="email" id="auth-email" placeholder="Email Address" required>
+        <input type="password" id="auth-password" placeholder="Password" required>
+        <button type="submit" class="btn" id="auth-submit-btn">Sign In</button>
+    </form>
+    <p class="toggle-lnk" id="auth-toggle-msg" onclick="toggleAuthViewMode()">Don't have an account? <span>Sign Up</span></p>
+</div>
+
+<!-- Customer Dashboard View Layout -->
+<div id="panel-customer" class="view-panel" style="max-width: 700px;">
+    <h2>Your Dashboard</h2>
+    <label style="font-size:0.85rem; color:#aaa;">Account ID Reference:</label>
+    <input type="text" id="cust-profile-id" readonly style="opacity:0.5;">
+    <h3 style="font-family:'Cormorant Garamond'; font-size:1.8rem; color:#e8c16c; margin: 20px 0 10px 0;">Saved Cart Snapshot</h3>
+    <div id="cust-saved-cart-box" style="color:#bbb; font-size:0.95rem; background:rgba(0,0,0,0.2); padding:15px; border-radius:10px;">
+        No items saved to account storage layer.
+    </div>
+</div>
+
+<script>
+    let isLoginMode = true;
+
+    function toggleAuthViewMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? 'Login' : 'Create Account';
+        document.getElementById('auth-submit-btn').innerText = isLoginMode ? 'Sign In' : 'Sign Up';
+        document.getElementById('auth-toggle-msg').innerHTML = isLoginMode ? "Don't have an account? <span>Sign Up</span>" : "Already have an account? <span>Sign In</span>";
+    }
+
+    async function handleAuthSubmission(e) {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const endpoint = isLoginMode ? '/api/login' : '/api/signup';
+
+        const response = await fetch(`https://craftandcleanse.com${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            localStorage.setItem('cc_user_id', data.userId);
+            window.location.reload();
+        } else {
+            alert(data.error || 'Authentication Failed.');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        const userId = localStorage.getItem('cc_user_id');
+        if (!userId) return;
+
+        document.getElementById('panel-auth').classList.remove('active');
+        document.getElementById('panel-customer').classList.add('active');
+        document.getElementById('nav-logout-btn').style.display = 'inline-block';
+        document.getElementById('cust-profile-id').value = userId;
+
+        const res = await fetch(`https://craftandcleanse.com/api/cart/load?userId=${userId}`);
+        const data = await res.json();
+        if (data.success && data.items && data.items.length > 0) {
+            document.getElementById('cust-saved-cart-box').innerHTML = data.items.map(i => `• 1x ${i.product_id === 'handmade-soap' ? 'Handmade Soap' : 'Artisan Candle'} (Scent: <strong>${i.variant_scent}</strong>) x${i.quantity}`).join('<br>');
+        }
+    });
+
+    function executeUserLogout() {
+        localStorage.clear();
+        window.location.reload();
+    }
+</script>
+</body>
+</html>
