@@ -1,7 +1,19 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "craft-store",
+  "main": "worker.js",
   "compatibility_date": "2026-07-07",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "."
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "craft_store_db",
+      "database_id": "6076aa11-419a-4d92-9c0c-37b1ab43a84f"
+    }
+  ]
 }
