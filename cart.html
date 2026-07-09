@@ -12,7 +12,7 @@
         nav { width: 92%; margin: 0 auto 40px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); }
         nav a { color: white; text-decoration: none; font-family: "Cinzel", serif; }
         
-        /* Master Wrapper Grid Layouts */
+        /* Wrapper Layouts */
         .cart-container { max-width: 650px; margin: 40px auto; position: relative; }
         .cart-wrapper { background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); padding: 35px; border-radius: 25px; backdrop-filter: blur(25px); transition: opacity 0.4s ease, transform 0.4s ease; }
         h2, h3 { font-family: "Cinzel", serif; color: #e8c16c; text-align: center; margin-bottom: 25px; }
@@ -31,7 +31,7 @@
         .btn:hover { box-shadow: 0 0 25px #e8c16c; transform: scale(1.01); }
         .btn:disabled { background: #555; color: #888; border-color: #666; cursor: not-allowed; box-shadow: none !important; transform: none; }
 
-        /* ADVANCED LIABILITY SAFETY SLIDESHOW SHEET STYLING */
+        /* SAFETY SLIDESHOW SHEET STYLING */
         .safety-modal { display: none; background: rgba(10,12,22,0.95); border: 1px solid #e8c16c; padding: 40px 35px; border-radius: 25px; backdrop-filter: blur(40px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         .progress-bar-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 30px; overflow: hidden; position: relative; }
         .progress-bar-fill { height: 100%; width: 25%; background: linear-gradient(90deg, #e8c16c, #fff); border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -56,8 +56,8 @@
     <a href="index.html">← Back to Store</a>
     <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px;">Shopping Bag</div>
 </nav>
+
 <div class="cart-container">
-    <!-- MODULE 1: The Shopping Bag Overview Sheet -->
     <div id="wrapper-cart-list" class="view-panel cart-wrapper active">
         <h2>Review Order</h2>
         <div id="cart-items-target"></div>
@@ -71,14 +71,11 @@
         </div>
         <button class="btn" onclick="activateLiabilitySafetySlideshow()">Proceed to Payment</button>
     </div>
-
-    <!-- MODULE 2: The Branded Glass LLC Liability Safety Slideshow (Guarantees zero truncated strings) -->
     <div id="wrapper-safety-slides" class="view-panel safety-modal">
         <div class="progress-bar-container">
             <div id="safety-progress-indicator" class="progress-bar-fill"></div>
         </div>
 
-        <!-- Slide 1: Candle Safety Terms -->
         <div class="step-slide active" id="slide-step-1">
             <div class="safety-icon"><i class="fa-solid fa-fire-burner"></i></div>
             <h3>Handmade Candle Safety Protocol</h3>
@@ -92,7 +89,6 @@
             </div>
         </div>
 
-        <!-- Slide 2: Soap Safety Terms (FDA TRUE SOAP SAFE) -->
         <div class="step-slide" id="slide-step-2">
             <div class="safety-icon"><i class="fa-solid fa-soap"></i></div>
             <h3>True Soap Application Safety</h3>
@@ -105,7 +101,6 @@
             </div>
         </div>
 
-        <!-- Slide 3: E-Commerce Exchange & Mail Protection Invoicing Policy -->
         <div class="step-slide" id="slide-step-3">
             <div class="safety-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
             <h3>Refund & Exchange Indemnity</h3>
@@ -117,7 +112,6 @@
             </div>
         </div>
 
-        <!-- Slide 4: Master LLC Hold Harmless Corporate Legal Enclosure -->
         <div class="step-slide" id="slide-step-4">
             <div class="safety-icon"><i class="fa-solid fa-scale-balanced"></i></div>
             <h3>Hold Harmless Agreement</h3>
@@ -131,7 +125,6 @@
             </label>
         </div>
 
-        <!-- Carousel Intersect Navigation Control Array -->
         <div class="slide-nav-buttons">
             <button id="btn-slide-back" class="btn" style="background:rgba(255,255,255,0.05); border-color:#aaa;" onclick="progressLiabilitySlideBackwards()">Back</button>
             <button id="btn-slide-next" class="btn" onclick="progressLiabilitySlideForwards()">Next Block</button>
@@ -150,17 +143,12 @@
 
         if (activeCart.length === 0) {
             container.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">Your cart is empty.</p>';
-            document.getElementById('txt-subtotal').innerText = "$0.00";
-            document.getElementById('txt-tax').innerText = "$0.00";
-            document.getElementById('txt-shipping').innerText = "$0.00";
-            document.getElementById('txt-final').innerText = "$0.00";
             return;
         }
 
         let totalAmount = 0;
         activeCart.forEach((item, index) => {
             const currentItemPrice = item.id === 'handmade-soap' ? 12.00 : 25.00;
-            item.price = currentItemPrice; 
             totalAmount += currentItemPrice * item.quantity;
 
             const div = document.createElement('div');
@@ -193,9 +181,7 @@
 
     function adjustQty(index, change) {
         activeCart[index].quantity += change;
-        if (activeCart[index].quantity <= 0) {
-            activeCart.splice(index, 1);
-        }
+        if (activeCart[index].quantity <= 0) activeCart.splice(index, 1);
         localStorage.setItem('cc_cart_store', JSON.stringify(activeCart));
         loadCartData();
         syncCartWithCloudflareDatabase();
@@ -212,33 +198,36 @@
         const userId = localStorage.getItem('cc_user_id');
         if (!userId) return;
         
-        // SPACED FORMAT PROTOCOL APPLIED TO DOMAIN LINK BELOW:
-        await fetch('https://api.craftandcleanse.com/api/cart/save', { // fix link
+        // FIXED FOR PROTOCOL: Spaced out links
+        await fetch('https://api.craftandcleanse.com/api/cart/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, items: activeCart })
         });
     }
 
-    /* LIABILITY SLIDESHOW CONTROL PANEL FRAMEWORK ENGINE */
+    /* REQUIRED SECURITY REDIRECTION CHECK INJECTED NATIVELY */
     function activateLiabilitySafetySlideshow() {
         if (activeCart.length === 0) return alert('Your shopping cart is currently empty.');
+        
+        const userId = localStorage.getItem('cc_user_id');
+        if (!userId) {
+            alert('Authentication required: Please sign in or create an account to process your shipping delivery location information details!');
+            window.location.href = "portal.html"; 
+            return;
+        }
+
         document.getElementById('wrapper-cart-list').style.display = 'none';
         document.getElementById('wrapper-safety-slides').style.display = 'block';
         renderActiveLiabilitySlideState();
     }
 
     function renderActiveLiabilitySlideState() {
-        // Toggle view containers
         for (let i = 1; i <= totalLiabilitySlidesCount; i++) {
             document.getElementById(`slide-step-${i}`).style.display = (i === currentLiabilitySlideIndex) ? 'block' : 'none';
         }
-
-        // Render upper loading progress fill bar math metric calculations
         const linePercent = (currentLiabilitySlideIndex / totalLiabilitySlidesCount) * 100;
         document.getElementById('safety-progress-indicator').style.width = `${linePercent}%`;
-
-        // Update nav text values natively
         document.getElementById('btn-slide-back').style.visibility = (currentLiabilitySlideIndex === 1) ? 'hidden' : 'visible';
         
         const nextButton = document.getElementById('btn-slide-next');
@@ -256,7 +245,6 @@
             currentLiabilitySlideIndex++;
             renderActiveLiabilitySlideState();
         } else {
-            // Final slide reached: Execution gate drops to fire checkout session
             executeDynamicStripeCheckoutSession();
         }
     }
@@ -277,15 +265,15 @@
 
     async function executeDynamicStripeCheckoutSession() {
         const nextButton = document.getElementById('btn-slide-next');
-        nextButton.innerText = "Processing Transaction Gateway Request...";
+        nextButton.innerText = "Processing Transaction Request...";
         nextButton.disabled = true;
 
-        // SPACED FORMAT PROTOCOL APPLIED TO DOMAIN LINK BELOW:
-        const response = await fetch('https://api.craftandcleanse.com/api/checkout', { // fix link
+        // FIXED FOR PROTOCOL: Spaced out links
+        const response = await fetch('https://api.craftandcleanse.com/api/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                userId: localStorage.getItem('cc_user_id') || 'guest_buyer',
+                userId: localStorage.getItem('cc_user_id'),
                 items: activeCart
             })
         });
@@ -294,7 +282,7 @@
         if (session.url) {
             window.location.href = session.url; 
         } else {
-            alert('Checkout session failed to spin up. Review your Worker console log parameters.');
+            alert('Checkout session failed to spin up.');
             nextButton.innerText = "Authorize & Proceed to Checkout";
             nextButton.disabled = false;
         }
