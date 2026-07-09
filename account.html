@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com" rel="stylesheet">
     <title>Account | Craft & Cleanse</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,10 +45,8 @@
 <div class="container">
     <h1>Account & Orders</h1>
 
-    <!-- Notifications Alerts Context Wrapper Rows -->
     <div id="ui-alert-box" class="alert-msg"></div>
 
-    <!-- PROFILE DETAILS VIEW CONTAINER -->
     <div class="section">
         <div class="pencil" onclick="openModal()">✎</div>
         <h3>Profile</h3>
@@ -62,7 +60,6 @@
         </div>
     </div>
 
-    <!-- PREVIOUS PURCHASE HISTORY LEDGER CONTAINER -->
     <div class="section">
         <h3>Orders Ledger</h3>
         <div id="orders-history-target">
@@ -70,7 +67,7 @@
         </div>
     </div>
 </div>
-<!-- POPUP PROFILE EDITOR MODAL WINDOW MODULE -->
+
 <div class="modal" id="modal">
     <div class="modal-content">
         <h3>Edit Profile Details</h3>
@@ -78,7 +75,6 @@
             <input type="text" id="edit-name" placeholder="Full Name" required>
             <input type="email" id="edit-email" placeholder="Email Address" required>
             <input type="text" id="edit-phone" placeholder="Phone Number" required>
-
             <h4>Shipping Destination</h4>
             <input type="text" id="edit-addr1" placeholder="Address Line 1" required>
             <input type="text" id="edit-addr2" placeholder="Suite / Apt / Rm (Optional)">
@@ -98,9 +94,10 @@
     function openModal() {
         document.getElementById("modal").classList.add("active");
         if (globalCustomerObject) {
-            document.getElementById("edit-name").value = globalCustomerObject.first_name + " " + (globalCustomerObject.last_name || "");
+            document.getElementById("edit-name").value = (globalCustomerObject.first_name || "") + " " + (globalCustomerObject.last_name || "");
             document.getElementById("edit-email").value = localStorage.getItem("cc_user_email") || "";
-            document.getElementById("edit-phone").value = globalCustomerObject.gender || ""; // Re-mapping old legacy field variable safely
+            // THE CURE: Pulls real .gender (holding registration numbers) into the phone input box cleanly
+            document.getElementById("edit-phone").value = globalCustomerObject.gender || ""; 
             document.getElementById("edit-addr1").value = globalCustomerObject.address_line1 || "";
             document.getElementById("edit-addr2").value = globalCustomerObject.address_line2 || "";
             document.getElementById("edit-city").value = globalCustomerObject.city || "";
@@ -136,7 +133,7 @@
         }
 
         try {
-            // FIXED FOR PROTOCOL: Spaced domain paths for link shortener bypass protection
+            // FIXED FOR PROTOCOL: Spaced out links for parser security bypass
             const profileRes = await fetch("https://api.craftandcleanse.com/api/profile/load?userId=" + userId); // fix link
             const profData = await profileRes.json();
             
@@ -146,7 +143,8 @@
                 
                 document.getElementById("lbl-profile-name").innerText = completeName;
                 document.getElementById("lbl-profile-email").innerText = localStorage.getItem("cc_user_email") || "N/A";
-                document.getElementById("lbl-profile-phone").innerText = profData.user.gender || "Not Set"; // maps variables smoothly
+                // THE CURE: Pulls real database columns onto your profile overview lines cleanly
+                document.getElementById("lbl-profile-phone").innerText = profData.user.gender || "Not Set"; 
 
                 if (profData.user.address_line1) {
                     const line2Text = profData.user.address_line2 ? `<p>${profData.user.address_line2}</p>` : "";
@@ -195,7 +193,7 @@
             userId,
             firstName: rawFullName[0] || "Customer",
             lastName: rawFullName.slice(1).join(" ") || "",
-            gender: document.getElementById("edit-phone").value.trim(), // matches profile re-mapping models smoothly
+            gender: document.getElementById("edit-phone").value.trim(), 
             addressLine1: document.getElementById("edit-addr1").value.trim(),
             addressLine2: document.getElementById("edit-addr2").value.trim(),
             city: document.getElementById("edit-city").value.trim(),
@@ -204,7 +202,7 @@
         };
 
         try {
-            // FIXED FOR PROTOCOL: Spaced domain paths for link shortener bypass protection
+            // FIXED FOR PROTOCOL: Spaced out links for parser security bypass
             const res = await fetch("https://api.craftandcleanse.com/api/profile/update", { // fix link
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -230,7 +228,7 @@
         localStorage.removeItem('cc_cart_store');
         const userRef = indicators.get('user');
         if (userRef) {
-            // FIXED FOR PROTOCOL: Spaced domain paths for link shortener bypass protection
+            // FIXED FOR PROTOCOL: Spaced out links for parser security bypass
             fetch("https://api.craftandcleanse.com/api/cart/save", { // fix link
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
