@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "craft-store-api",
+  "name": "craft-store",
   "main": "worker.js",
   "compatibility_date": "2026-07-07",
   "compatibility_flags": [
