@@ -1,8 +1,0 @@
-{
-  "name": "craft-store-api",
-  "version": "1.0.0",
-  "module": true,
-  "dependencies": {
-    "stripe": "^15.1.0"
-  }
-}
