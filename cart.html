@@ -21,20 +21,16 @@
     </style>
 </head>
 <body>
-
 <nav>
     <a href="index.html">← Back to Store</a>
     <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px;">Shopping Bag</div>
 </nav>
-
 <div class="cart-wrapper">
     <h2>Review Order</h2>
-    <div id="cart-items-target">
-        <!-- Javascript renders row items inside here -->
-    </div>
+    <div id="cart-items-target"></div>
     <div class="totals-box">
         <div class="totals-row"><span>Items Subtotal:</span><span id="txt-subtotal">$0.00</span></div>
-        <div class="totals-row"><span>MI Sales Tax (6% Inclusive):</span><span id="txt-tax">$0.00</span></div>
+        <div class="totals-row"><span>MI Sales Tax (6% Exclusive):</span><span id="txt-tax">$0.00</span></div>
         <div class="totals-row"><span>USPS Flat Rate Shipping:</span><span id="txt-shipping">$0.00</span></div>
         <div class="totals-row" style="font-size:1.3rem; color:#fff; font-weight:bold; border-top:1px solid rgba(232,193,108,0.1); padding-top:8px;">
             <span>Grand Total:</span><span id="txt-final">$0.00</span>
@@ -42,20 +38,16 @@
     </div>
     <button class="btn" onclick="checkoutViaCustomWorker()">Proceed to Payment</button>
 </div>
-
 <script>
     let activeCart = [];
-
-        function loadCartData() {
+    function loadCartData() {
         activeCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
         const container = document.getElementById('cart-items-target');
         container.innerHTML = '';
-
         if (activeCart.length === 0) {
             container.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">Your cart is empty.</p>';
             return;
         }
-
         let totalAmount = 0;
         activeCart.forEach(item => {
             totalAmount += item.price * item.quantity;
@@ -70,62 +62,28 @@
             `;
             container.appendChild(div);
         });
-
-        // EXCLUSIVE TAX MATH: Clean 6% computed strictly on the items subtotal ($4.50)
         const taxAmount = totalAmount * 0.06; 
         const shippingFee = activeCart.length > 0 ? 15.00 : 0.00;
         const grandTotal = totalAmount + taxAmount + shippingFee;
-
         document.getElementById('txt-subtotal').innerText = `$${totalAmount.toFixed(2)}`;
         document.getElementById('txt-tax').innerText = `$${taxAmount.toFixed(2)}`;
         document.getElementById('txt-shipping').innerText = `$${shippingFee.toFixed(2)}`;
         document.getElementById('txt-final').innerText = `$${grandTotal.toFixed(2)}`;
     }
-
-            function checkoutViaCustomWorker() {
+    function checkoutViaCustomWorker() {
         if (activeCart.length === 0) return alert('Your cart is empty.');
-
-        // Build a text descriptor string matching your exact cart contents
-        let mappingKey = "";
-        activeCart.forEach(item => {
-            mappingKey += item.id + "_";
-        });
-
-        // STRIPE HARDCODED ROUTING CORE (Guaranteed 0% Error Rate)
+        let hasSoap = activeCart.some(i => i.id === 'handmade-soap');
+        let hasCandle = activeCart.some(i => i.id === 'artisan-candle');
         let finalStripeUrl = "";
-
-        if (mappingKey === "handmade-soap_") {
-            // SCENARIO 1: Buyer only added Soap to their bag
-            finalStripeUrl = "https://buy.stripe.com/test_14AbJ1a1Wd0kf4DdZO7AI00";
-        } 
-        else if (mappingKey === "artisan-candle_") {
-            // SCENARIO 2: Buyer only added a Candle to their bag
-            finalStripeUrl = "https://buy.stripe.com/test_3cI7sLa1WaScaOndZO7AI01";
-        } 
-        else {
-            // SCENARIO 3: Buyer added BOTH items (or multiple items) to their bag
+        if (hasSoap && hasCandle) {
             finalStripeUrl = "https://buy.stripe.com/test_8x25kD0rm2lG4pZf3S7AI02";
+        } else if (hasSoap) {
+            finalStripeUrl = "https://buy.stripe.com/test_14AbJ1a1Wd0kf4DdZO7AI00";
+        } else if (hasCandle) {
+            finalStripeUrl = "https://buy.stripe.com/test_3cI7sLa1WaScaOndZO7AI01";
         }
-
-        // Redirect the customer straight to Stripe's secure cloud server canvas
         window.location.href = finalStripeUrl;
     }
-
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            return alert(errData.error || 'Stripe connection error.');
-        }
-
-        const session = await response.json();
-        if (session.url) {
-            window.location.href = session.url; // Route straight to secure Stripe checkout screen
-        } else {
-            alert('Stripe initialization failed.');
-        }
-    }
-
-
     window.addEventListener('DOMContentLoaded', loadCartData);
 </script>
 </body>
