@@ -5,25 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C&C Shopping Cart</title>
     <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding: 40px 20px; }
         nav { width: 92%; margin: 0 auto 40px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); }
         nav a { color: white; text-decoration: none; font-family: "Cinzel", serif; }
-        .cart-wrapper { max-width: 650px; margin: 40px auto; background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); padding: 35px; border-radius: 25px; backdrop-filter: blur(25px); }
-        h2 { font-family: "Cinzel", serif; color: #e8c16c; text-align: center; margin-bottom: 25px; }
+        
+        /* Master Wrapper Grid Layouts */
+        .cart-container { max-width: 650px; margin: 40px auto; position: relative; }
+        .cart-wrapper { background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); padding: 35px; border-radius: 25px; backdrop-filter: blur(25px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        h2, h3 { font-family: "Cinzel", serif; color: #e8c16c; text-align: center; margin-bottom: 25px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(232,193,108,0.1); }
         .item-title { font-family: "Cormorant Garamond", serif; font-size: 1.5rem; color: #e8c16c; }
         .qty-controls { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
         .qty-btn { background: rgba(232,193,108,0.15); border: 1px solid #e8c16c; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
         .qty-btn:hover { background: #e8c16c; color: #05060b; }
         .qty-val { font-weight: 600; min-width: 20px; text-align: center; }
-        .remove-btn { color: #ff6b6b; font-size: 0.85rem; background: none; border: none; cursor: pointer; text-decoration: underline; margin-left: 15px; transition: 0.2s; }
-        .remove-btn:hover { color: #ff4747; }
+        .remove-btn { color: #ff6b6b; font-size: 0.85rem; background: none; border: none; cursor: pointer; text-decoration: underline; margin-left: 15px; }
         .totals-box { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(232,193,108,0.2); font-size: 0.95rem; color: #bbb; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .btn { display: inline-block; width: 100%; text-align: center; padding: 14px; background: #e8c16c; color: #05060b; border: none; border-radius: 50px; font-weight: 600; text-decoration: none; cursor: pointer; margin-top: 20px; transition: .3s; }
+        
+        /* Interactive Action Buttons */
+        .btn { display: inline-block; width: 100%; text-align: center; padding: 14px; background: #e8c16c; color: #05060b; border: none; border-radius: 50px; font-weight: 600; text-decoration: none; cursor: pointer; margin-top: 20px; transition: .3s; font-family: "Inter", sans-serif; }
         .btn:hover { box-shadow: 0 0 25px #e8c16c; transform: scale(1.01); }
+        .btn:disabled { background: #555; color: #888; border-color: #666; cursor: not-allowed; box-shadow: none !important; transform: none; }
+
+        /* ADVANCED LIABILITY SAFETY SLIDESHOW SHEET STYLING */
+        .safety-modal { display: none; background: rgba(10,12,22,0.95); border: 1px solid #e8c16c; padding: 40px 35px; border-radius: 25px; backdrop-filter: blur(40px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .progress-bar-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 30px; overflow: hidden; position: relative; }
+        .progress-bar-fill { height: 100%; width: 25%; background: linear-gradient(90deg, #e8c16c, #fff); border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .step-slide { display: none; text-align: center; animation: fadeInSlide 0.5s ease forwards; }
+        .step-slide.active { display: block; }
+        .safety-icon { font-size: 3rem; color: #e8c16c; margin-bottom: 20px; text-shadow: 0 0 20px rgba(232,193,108,0.4); }
+        .safety-text { font-family: "Cormorant Garamond", serif; font-size: 1.4rem; color: #ddd; line-height: 1.6; margin-bottom: 25px; }
+        .policy-block { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(232,193,108,0.1); text-align: left; font-size: 0.85rem; max-height: 150px; overflow-y: auto; color: #bbb; line-height: 1.5; margin-bottom: 20px; }
+        .slide-nav-buttons { display: flex; gap: 15px; margin-top: 25px; }
+        .checkbox-container { display: flex; align-items: flex-start; gap: 12px; text-align: left; font-size: 0.85rem; margin: 20px 0; color: #ccc; line-height: 1.4; }
+        .checkbox-container input { width: auto; margin-top: 3px; cursor: pointer; }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -32,25 +56,92 @@
     <a href="index.html">← Back to Store</a>
     <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px;">Shopping Bag</div>
 </nav>
-
-<div class="cart-wrapper">
-    <h2>Review Order</h2>
-    <div id="cart-items-target">
-        <!-- Javascript renders item loops inside here -->
+<div class="cart-container">
+    <!-- MODULE 1: The Shopping Bag Overview Sheet -->
+    <div id="wrapper-cart-list" class="view-panel cart-wrapper active">
+        <h2>Review Order</h2>
+        <div id="cart-items-target"></div>
+        <div class="totals-box">
+            <div class="totals-row"><span>Items Subtotal:</span><span id="txt-subtotal">$0.00</span></div>
+            <div class="totals-row"><span>MI Sales Tax (6% Exclusive):</span><span id="txt-tax">$0.00</span></div>
+            <div class="totals-row"><span>USPS Flat Rate Shipping:</span><span id="txt-shipping">$0.00</span></div>
+            <div class="totals-row" style="font-size:1.3rem; color:#fff; font-weight:bold; border-top:1px solid rgba(232,193,108,0.1); padding-top:8px;">
+                <span>Grand Total:</span><span id="txt-final">$0.00</span>
+            </div>
+        </div>
+        <button class="btn" onclick="activateLiabilitySafetySlideshow()">Proceed to Payment</button>
     </div>
-    <div class="totals-box">
-        <div class="totals-row"><span>Items Subtotal:</span><span id="txt-subtotal">$0.00</span></div>
-        <div class="totals-row"><span>MI Sales Tax (6% Exclusive):</span><span id="txt-tax">$0.00</span></div>
-        <div class="totals-row"><span>USPS Flat Rate Shipping:</span><span id="txt-shipping">$0.00</span></div>
-        <div class="totals-row" style="font-size:1.3rem; color:#fff; font-weight:bold; border-top:1px solid rgba(232,193,108,0.1); padding-top:8px;">
-            <span>Grand Total:</span><span id="txt-final">$0.00</span>
+
+    <!-- MODULE 2: The Branded Glass LLC Liability Safety Slideshow (Guarantees zero truncated strings) -->
+    <div id="wrapper-safety-slides" class="view-panel safety-modal">
+        <div class="progress-bar-container">
+            <div id="safety-progress-indicator" class="progress-bar-fill"></div>
+        </div>
+
+        <!-- Slide 1: Artisan Candle Safety Terms -->
+        <div class="step-slide active" id="slide-step-1">
+            <div class="safety-icon"><i class="fa-solid fa-fire-burner"></i></div>
+            <h3>Artisan Candle Safety Protocol</h3>
+            <p class="safety-text">To prevent fire, smoke pollution, and physical injury, you must strictly read and adhere to our burning protocol parameters:</p>
+            <div class="policy-block">
+                • Do NOT burn your artisan candle for longer than 4 hours at any single session.<br>
+                • ALWAYS burn your candle within an active line of sight. Never leave an open flame unattended.<br>
+                • Keep away from children, family pets, hair, and clothing matrices.<br>
+                • Burn strictly on a flat, stable, level, heat-resistant, and non-flammable surface structure.<br>
+                • Trim the cotton wick to 1/4 inch before lighting your candle to ensure clean smoke output.
+            </div>
+        </div>
+
+        <!-- Slide 2: Kettle Soap Bio-Safety Terms -->
+        <div class="step-slide" id="slide-step-2">
+            <div class="safety-icon"><i class="fa-solid fa-soap"></i></div>
+            <h3>Soap Bio-Safety Protocol</h3>
+            <p class="safety-text">Our kettle-cooked soaps contain 100% natural nourishing oils. Review safe body integration constraints:</p>
+            <div class="policy-block">
+                • If acute dermal skin irritation, redness, or localized swelling occurs, immediately cease application.<br>
+                • Avoid contact with eyes, optical structures, internal mucous membranes, and respiratory tracts.<br>
+                • If accidental contact with eyes occurs, flush thoroughly with cold tap water for 15 minutes.<br>
+                • Not for ingestion. Do not swallow or consume our artisanal product materials.
+            </div>
+        </div>
+
+        <!-- Slide 3: E-Commerce Exchange & Mail Protection Invoicing Policy -->
+        <div class="step-slide" id="slide-step-3">
+            <div class="safety-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            <h3>Refund & Exchange Indemnity</h3>
+            <p class="safety-text">Because our items are handmade, we maintain strict financial parameters regarding retail operations:</p>
+            <div class="policy-block">
+                • We maintain a strict NO RETURNS and NO REFUNDS policy across all standard transactions.<br>
+                • Refunds are strictly issued only upon presentation of visual proof that products arrived damaged in mail transport.<br>
+                • Shipments completely lost in transit by the United States Postal Service (USPS) are covered by corporate protection.
+            </div>
+        </div>
+
+        <!-- Slide 4: Master LLC Hold Harmless Corporate Legal Enclosure -->
+        <div class="step-slide" id="slide-step-4">
+            <div class="safety-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <h3>Hold Harmless Agreement</h3>
+            <p class="safety-text">You are purchasing products directly manufactured by PAYNE CRAFT & CLEANSE LLC:</p>
+            <div class="policy-block">
+                By ticking the authorization checkpoint below and completing this checkout session, you hereby completely agree, acknowledge, and stipulate that you release, hold harmless, and forever defend PAYNE CRAFT & CLEANSE LLC, its officers, managers, individual system developers, and holding members from any and all legal liability, medical claims, fire damage costs, skin injuries, or property losses arising from the combustion, application, or handling of our handmade materials.
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="chk-legal-acceptance" onchange="evaluateLegalAuthorizationCheckboxState()">
+                <span>I have carefully read, understood, and mathematically agreed to all safety disclaimers, manufacturing guidelines, and LLC refund indemnities listed above.</span>
+            </label>
+        </div>
+
+        <!-- Carousel Intersect Navigation Control Array -->
+        <div class="slide-nav-buttons">
+            <button id="btn-slide-back" class="btn" style="background:rgba(255,255,255,0.05); border-color:#aaa;" onclick="progressLiabilitySlideBackwards()">Back</button>
+            <button id="btn-slide-next" class="btn" onclick="progressLiabilitySlideForwards()">Next Block</button>
         </div>
     </div>
-    <button class="btn" onclick="checkoutViaCustomWorker()">Proceed to Payment</button>
 </div>
-
 <script>
     let activeCart = [];
+    let currentLiabilitySlideIndex = 1;
+    const totalLiabilitySlidesCount = 4;
 
     function loadCartData() {
         activeCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
@@ -69,7 +160,7 @@
         let totalAmount = 0;
         activeCart.forEach((item, index) => {
             const currentItemPrice = item.id === 'handmade-soap' ? 12.00 : 25.00;
-            item.price = currentItemPrice; // Clean visual alignment parameters
+            item.price = currentItemPrice; 
             totalAmount += currentItemPrice * item.quantity;
 
             const div = document.createElement('div');
@@ -99,6 +190,7 @@
         document.getElementById('txt-shipping').innerText = `$${shippingFee.toFixed(2)}`;
         document.getElementById('txt-final').innerText = `$${grandTotal.toFixed(2)}`;
     }
+
     function adjustQty(index, change) {
         activeCart[index].quantity += change;
         if (activeCart[index].quantity <= 0) {
@@ -120,7 +212,7 @@
         const userId = localStorage.getItem('cc_user_id');
         if (!userId) return;
         
-        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path
+        // SPACED FORMAT PROTOCOL APPLIED TO DOMAIN LINK BELOW:
         await fetch('https://api.craftandcleanse.com/api/cart/save', { // fix link
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -128,10 +220,67 @@
         });
     }
 
-    async function checkoutViaCustomWorker() {
-        if (activeCart.length === 0) return alert('Your cart is empty.');
+    /* LIABILITY SLIDESHOW CONTROL PANEL FRAMEWORK ENGINE */
+    function activateLiabilitySafetySlideshow() {
+        if (activeCart.length === 0) return alert('Your shopping cart is currently empty.');
+        document.getElementById('wrapper-cart-list').style.display = 'none';
+        document.getElementById('wrapper-safety-slides').style.display = 'block';
+        renderActiveLiabilitySlideState();
+    }
+
+    function renderActiveLiabilitySlideState() {
+        // Toggle view containers
+        for (let i = 1; i <= totalLiabilitySlidesCount; i++) {
+            document.getElementById(`slide-step-${i}`).style.display = (i === currentLiabilitySlideIndex) ? 'block' : 'none';
+        }
+
+        // Render upper loading progress fill bar math metric calculations
+        const linePercent = (currentLiabilitySlideIndex / totalLiabilitySlidesCount) * 100;
+        document.getElementById('safety-progress-indicator').style.width = `${linePercent}%`;
+
+        // Update nav text values natively
+        document.getElementById('btn-slide-back').style.visibility = (currentLiabilitySlideIndex === 1) ? 'hidden' : 'visible';
         
-        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path
+        const nextButton = document.getElementById('btn-slide-next');
+        if (currentLiabilitySlideIndex === totalLiabilitySlidesCount) {
+            nextButton.innerText = "Authorize & Proceed to Checkout";
+            evaluateLegalAuthorizationCheckboxState();
+        } else {
+            nextButton.innerText = "Next Card";
+            nextButton.disabled = false;
+        }
+    }
+
+    function progressLiabilitySlideForwards() {
+        if (currentLiabilitySlideIndex < totalLiabilitySlidesCount) {
+            currentLiabilitySlideIndex++;
+            renderActiveLiabilitySlideState();
+        } else {
+            // Final slide reached: Execution gate drops to fire checkout session
+            executeDynamicStripeCheckoutSession();
+        }
+    }
+
+    function progressLiabilitySlideBackwards() {
+        if (currentLiabilitySlideIndex > 1) {
+            currentLiabilitySlideIndex--;
+            renderActiveLiabilitySlideState();
+        }
+    }
+
+    function evaluateLegalAuthorizationCheckboxState() {
+        if (currentLiabilitySlideIndex === totalLiabilitySlidesCount) {
+            const checkbox = document.getElementById('chk-legal-acceptance');
+            document.getElementById('btn-slide-next').disabled = !checkbox.checked;
+        }
+    }
+
+    async function executeDynamicStripeCheckoutSession() {
+        const nextButton = document.getElementById('btn-slide-next');
+        nextButton.innerText = "Processing Transaction Gateway Request...";
+        nextButton.disabled = true;
+
+        // SPACED FORMAT PROTOCOL APPLIED TO DOMAIN LINK BELOW:
         const response = await fetch('https://api.craftandcleanse.com/api/checkout', { // fix link
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -145,7 +294,9 @@
         if (session.url) {
             window.location.href = session.url; 
         } else {
-            alert('Checkout engine initialization failed.');
+            alert('Checkout session failed to spin up. Review your Worker console log parameters.');
+            nextButton.innerText = "Authorize & Proceed to Checkout";
+            nextButton.disabled = false;
         }
     }
 
