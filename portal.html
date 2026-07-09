@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://googleapis.com" rel="stylesheet">
+    <title>Craft & Cleanse | Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top,#1b1f3a,#05060b); font-family: "Inter", sans-serif; color: #f5e7c8; }
+        .container { width: 520px; padding: 30px; border-radius: 30px; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border: 1px solid rgba(232,193,108,.25); box-shadow: 0 0 40px rgba(232,193,108,.2); }
+        h1 { text-align: center; font-family: "Cinzel", serif; color: #e8c16c; }
+        .subtitle { text-align: center; color: #bbb; margin-bottom: 20px; }
+        .error { display: none; background: rgba(255,80,80,.15); border: 1px solid rgba(255,80,80,.4); padding: 10px; border-radius: 15px; margin-bottom: 15px; text-align: center; color: #ff8080; }
+        .section { margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(232,193,108,.2); }
+        .section h3 { font-family: "Cinzel", serif; font-size: 14px; color: #e8c16c; margin-bottom: 10px; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 12px; margin-top: 10px; border-radius: 15px; border: 1px solid rgba(232,193,108,.3); background: #0f111a; color: white; outline: none; }
+        input:focus, select:focus { border-color: #e8c16c; }
+        .row { display: flex; gap: 10px; }
+        .row input { flex: 1; min-width: 0; }
+        .row input[name="zip"] { flex: 0.6; min-width: 140px; }
+        button { width: 100%; margin-top: 15px; padding: 12px; border-radius: 20px; border: 1px solid #e8c16c; background: rgba(232,193,108,.1); color: white; cursor: pointer; transition: 0.2s; font-weight: 600; }
+        button:hover { background: #e8c16c; color: #05060b; box-shadow: 0 0 20px #e8c16c; }
+        .switch { display: flex; justify-content: center; margin-top: 15px; gap: 10px; }
+        .switch button { width: auto; padding: 8px 20px; margin-top: 0; font-size: 0.85rem; border-radius: 15px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Craft & Cleanse</h1>
+    <p class="subtitle">Member Portal</p>
+
+    <!-- Client-Side Rendered Error Alert Container Box -->
+    <div class="error" id="error-alert-box"></div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="executeClientAuthSession(event, 'login')">
+        <div class="section">
+            <h3>LOGIN</h3>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" onsubmit="executeClientAuthSession(event, 'signup')" class="hidden">
+        <div class="section">
+            <h3>NAME</h3>
+            <input type="text" id="sign-first" placeholder="First Name" required>
+            <input type="text" id="sign-last" placeholder="Last Name" required>
+            <input type="text" id="sign-middle" placeholder="Middle Initial (Optional)">
+        </div>
+
+        <div class="section">
+            <h3>CONTACT</h3>
+            <input type="email" id="sign-email" placeholder="Email" required>
+            <input type="text" id="sign-phone" placeholder="Phone Number" required>
+            <input type="password" id="sign-pass" placeholder="Password" required>
+            <input type="password" id="sign-confirm" placeholder="Confirm Password" required>
+        </div>
+
+        <div class="section">
+            <h3>SHIPPING ADDRESS</h3>
+            <input type="text" id="sign-addr1" placeholder="Address 1" required>
+            <input type="text" id="sign-addr2" placeholder="Address 2 (Optional)">
+            <div class="row">
+                <input type="text" id="sign-city" placeholder="City" required>
+                <input type="text" id="sign-state" placeholder="State" required maxlength="2">
+            </div>
+            <div class="row">
+                <input type="text" id="sign-zip" placeholder="Zip Code" required>
+                <select id="sign-country" disabled>
+                    <option value="United States" selected>United States</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit">Create Account</button>
+    </form>
+
+    <div class="switch">
+        <button type="button" onclick="showLogin()">Login View</button>
+        <button type="button" onclick="showSignup()">Signup View</button>
+    </div>
+</div>
+
+<script>
+    function showLogin(){
+        document.getElementById("loginForm").classList.remove("hidden");
+        document.getElementById("signupForm").classList.add("hidden");
+        clearErrorAlert();
+    }
+
+    function showSignup(){
+        document.getElementById("signupForm").classList.remove("hidden");
+        document.getElementById("loginForm").classList.add("hidden");
+        clearErrorAlert();
+    }
+
+    function triggerErrorAlert(message) {
+        const box = document.getElementById("error-alert-box");
+        box.innerText = message;
+        box.style.display = "block";
+    }
+
+    function clearErrorAlert() {
+        document.getElementById("error-alert-box").style.display = "none";
+    }
+
+    async function executeClientAuthSession(e, mode) {
+        e.preventDefault();
+        clearErrorAlert();
+
+        const payload = {};
+        let endpoint = "";
+
+        if (mode === 'login') {
+            endpoint = "/api/login";
+            payload.email = document.getElementById("login-email").value.trim();
+            payload.password = document.getElementById("login-password").value;
+        } else {
+            endpoint = "/api/signup";
+            const password = document.getElementById("sign-pass").value;
+            const confirm = document.getElementById("sign-confirm").value;
+
+            if (password !== confirm) {
+                return triggerErrorAlert("Validation failed: Passwords do not match!");
+            }
+
+            payload.email = document.getElementById("sign-email").value.trim();
+            payload.password = password;
+            payload.title = "Customer"; // Fallback placeholder to maintain D1 table structures
+            payload.firstName = document.getElementById("sign-first").value.trim();
+            payload.lastName = document.getElementById("sign-last").value.trim();
+            payload.gender = "N/A"; // Maintains registration integrity mappings
+            payload.addressLine1 = document.getElementById("sign-addr1").value.trim();
+            payload.addressLine2 = document.getElementById("sign-addr2").value.trim();
+            payload.city = document.getElementById("sign-city").value.trim();
+            payload.state = document.getElementById("sign-state").value.trim().toUpperCase();
+            payload.zipCode = document.getElementById("sign-zip").value.trim();
+        }
+
+        try {
+            // FIXED FOR PROTOCOL: Spaced out parameters to prevent link shortening leaks
+            const response = await fetch("https : // api . craftandcleanse . com" + endpoint, { // fix link
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                localStorage.setItem("cc_user_id", data.userId);
+                localStorage.setItem("cc_user_email", payload.email);
+                
+                // Routes cleanly onto your main account hub profile page layout dashboard
+                window.location.href = "account.html"; 
+            } else {
+                triggerErrorAlert(data.error || "Authentication execution rejected.");
+            }
+        } catch (err) {
+            triggerErrorAlert("Database endpoint connectivity failure. Verify API deployment.");
+        }
+    }
+
+    // Automatically inspect if user session is actively running on site entry
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('cc_user_id')) {
+            window.location.href = "account.html";
+        }
+    });
+</script>
+</body>
+</html>
