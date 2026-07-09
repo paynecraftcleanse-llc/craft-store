@@ -3,86 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C&C Account Portal</title>
+    <title>C&C Hub Portal</title>
     <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding: 30px 20px; }
-        nav { width: 92%; margin: 0 auto 40px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); }
+        nav { width: 92%; margin: 0 auto 30px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); }
         nav a { color: white; text-decoration: none; font-weight: 500; font-family: "Cinzel", serif; }
-        .view-panel { display: none; max-width: 500px; margin: 40px auto; padding: 35px; background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); border-radius: 25px; backdrop-filter: blur(25px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .view-panel { display: none; background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.15); border-radius: 25px; backdrop-filter: blur(25px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 35px; }
         .view-panel.active { display: block; }
-        h2 { font-family: "Cinzel", serif; color: #e8c16c; margin-bottom: 25px; text-shadow: 0 0 15px rgba(232,193,108,0.3); text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,.2); border-radius: 10px; color: white; outline: none; }
-        .btn { width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; font-weight: 600; cursor: pointer; transition: .3s; }
+        .auth-box { max-width: 500px; margin: 40px auto; }
+        h2, h3 { font-family: "Cinzel", serif; color: #e8c16c; margin-bottom: 20px; text-shadow: 0 0 15px rgba(232,193,108,0.3); }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,.2); border-radius: 10px; color: white; outline: none; font-family: "Inter", sans-serif; }
+        input:focus, select:focus { border-color: #e8c16c; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .btn { width: 100%; padding: 14px; background: rgba(232,193,108,.15); border: 1px solid #e8c16c; color: white; border-radius: 50px; font-weight: 600; cursor: pointer; transition: .3s; font-family: "Inter", sans-serif; }
         .btn:hover { background: #e8c16c; color: #05060b; box-shadow: 0 0 25px #e8c16c; }
         .toggle-lnk { font-size: 0.85rem; margin-top: 15px; color: #aaa; cursor: pointer; text-align: center; }
         .toggle-lnk span { color: #e8c16c; text-decoration: underline; }
+        
+        /* Dashboard Layout View Grid */
+        .dash-layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .info-card { background: rgba(0,0,0,0.3); border: 1px solid rgba(232,193,108,0.1); padding: 25px; border-radius: 20px; position: relative; }
+        .edit-icon-btn { position: absolute; top: 20px; right: 20px; color: #e8c16c; cursor: pointer; background: none; border: none; font-size: 1.1rem; }
+        .dash-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .order-row { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #e8c16c; font-size: 0.9rem; }
     </style>
 </head>
 <body>
+
 <nav>
     <a href="index.html">← Back to Store</a>
-    <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px; font-weight:bold;">Customer Portal</div>
+    <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px; font-weight:bold;">Account Manager</div>
     <a href="#" id="nav-logout-btn" style="display:none;" onclick="executeUserLogout()">Sign Out</a>
 </nav>
-<div id="panel-auth" class="view-panel active">
-    <h2 id="auth-title">Login</h2>
-    <form onsubmit="handleAuthSubmission(event)">
+
+<!-- PANEL 1: Advanced Dual-Mode Registration / Auth Form Interface -->
+<div id="panel-auth" class="view-panel auth-box">
+    <h2 id="auth-title">Customer Login</h2>
+    <form id="frm-auth" onsubmit="handleAuthSubmission(event)">
+        <!-- Signup-Only Fields Element -->
+        <div id="signup-fields-grid" style="display:none;">
+            <div class="grid-3">
+                <select id="reg-title">
+                    <option value="Mr.">Mr.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Ms.">Ms.</option>
+                    <option value="Dr.">Dr.</option>
+                </select>
+                <input type="text" id="reg-firstname" placeholder="First Name">
+                <input type="text" id="reg-lastname" placeholder="Last Name (Opt)">
+            </div>
+            <select id="reg-gender">
+                <option value="">Select Gender Attribute</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Prefer Not to Say</option>
+            </select>
+            <input type="text" id="reg-addr1" placeholder="Shipping Address Line 1">
+            <input type="text" id="reg-addr2" placeholder="Suite / Apt / Room (Optional)">
+            <div class="grid-3">
+                <input type="text" id="reg-city" placeholder="City">
+                <input type="text" id="reg-state" placeholder="State (e.g. MI)" maxlength="2">
+                <input type="text" id="reg-zip" placeholder="Zip Code">
+            </div>
+            <input type="text" value="United States" readonly style="opacity:0.6; background:rgba(0,0,0,0.6);">
+        </div>
+
         <input type="email" id="auth-email" placeholder="Email Address" required>
         <input type="password" id="auth-password" placeholder="Password" required>
+        
+        <div id="signup-confirm-row" style="display:none;">
+            <input type="password" id="auth-confirm-password" placeholder="Confirm Your Password">
+        </div>
+        
         <button type="submit" class="btn" id="auth-submit-btn">Sign In</button>
     </form>
     <p class="toggle-lnk" id="auth-toggle-msg" onclick="toggleAuthViewMode()">Don't have an account? <span>Sign Up</span></p>
 </div>
-<!-- Customer Dashboard View Layout -->
-<div id="panel-customer" class="view-panel" style="max-width: 700px;">
-    <h2>Your Dashboard</h2>
-    <label style="font-size:0.85rem; color:#aaa;">Account ID Reference:</label>
-    <input type="text" id="cust-profile-id" readonly style="opacity:0.5;">
-    <h3 style="font-family:'Cormorant Garamond'; font-size:1.8rem; color:#e8c16c; margin: 20px 0 10px 0;">Saved Cart Snapshot</h3>
-    <div id="cust-saved-cart-box" style="color:#bbb; font-size:0.95rem; background:rgba(0,0,0,0.2); padding:15px; border-radius:10px;">
-        No items saved to account storage layer.
+<!-- PANEL 2: Advanced Customer Account Dashboard Structure Layout -->
+<div id="panel-customer" class="view-panel dash-layout">
+    <div class="info-card" style="text-align:center; padding:35px 20px;">
+        <h2 style="margin-bottom:5px;" id="lbl-greet-name">Welcome Back</h2>
+        <p style="color:#aaa; font-size:0.9rem;" id="lbl-profile-email">email@domain.com</p>
+    </div>
+
+    <div class="dash-cols-2">
+        <!-- Dashboard Column Left Grid: Customer Logistics Info Data Matrix -->
+        <div class="info-card">
+            <button class="edit-icon-btn" onclick="toggleProfileEditFormState(true)"><i class="fa-solid fa-pencil"></i></button>
+            <h3>Account Profile Details</h3>
+            
+            <div id="view-profile-text" style="line-height:1.8; color:#ddd; font-size:0.95rem; margin-top:15px;">
+                <p><strong>Customer Salutation:</strong> <span id="txt-view-title">Mr.</span></p>
+                <p><strong>Full Registered Name:</strong> <span id="txt-view-fullname">Malik Payne</span></p>
+                <p><strong>Gender Demographics:</strong> <span id="txt-view-gender">Male</span></p>
+                <p style="margin-top:15px; font-weight:bold; color:#e8c16c;"><i class="fa-solid fa-truck"></i> Default Shipping Destination:</p>
+                <p id="txt-view-address" style="white-space:pre-wrap; background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; margin-top:5px; color:#fff; border:1px solid rgba(232,193,108,0.05);"></p>
+            </div>
+
+            <!-- Profile Field Updating Mode Module Grid -->
+            <form id="frm-edit-profile" style="display:none; margin-top:15px;" onsubmit="executeProfileUpdateSave(event)">
+                <div class="grid-2">
+                    <input type="text" id="edit-firstname" placeholder="First Name" required>
+                    <input type="text" id="edit-lastname" placeholder="Last Name (Optional)">
+                </div>
+                <input type="text" id="edit-addr1" placeholder="Address Line 1" required>
+                <input type="text" id="edit-addr2" placeholder="Suite / Apt / Rm">
+                <div class="grid-3">
+                    <input type="text" id="edit-city" placeholder="City" required>
+                    <input type="text" id="edit-state" placeholder="State" required maxlength="2">
+                    <input type="text" id="edit-zip" placeholder="Zip Code" required>
+                </div>
+                <div class="grid-2" style="margin-top:10px;">
+                    <button type="button" class="btn" style="background:rgba(255,255,255,0.05); border-color:#aaa;" onclick="toggleProfileEditFormState(false)">Cancel</button>
+                    <button type="submit" class="btn">Save Profile Changes</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dashboard Column Right Grid: Real-Time Current Cart Synchronization Layer -->
+        <div class="info-card">
+            <h3>Current Active Shopping Bag</h3>
+            <div id="cust-saved-cart-box" style="color:#bbb; font-size:0.95rem; margin-top:15px; line-height:1.6;">
+                Loading current cloud items...
+            </div>
+            <a href="cart.html" class="btn" style="display:inline-block; text-align:center; margin-top:20px; font-size:0.9rem; padding:10px 0;">Open Active Bag to Purchase →</a>
+        </div>
+    </div>
+
+    <!-- Dashboard Row Bottom Section Layout: Previous Orders Fulfillment History logs -->
+    <div class="info-card">
+        <h3>Previous Store Purchases Ledger</h3>
+        <div id="cust-orders-history-target" style="margin-top:15px; color:#aaa; font-size:0.9rem;">
+            No verified purchases logged under this account file.
+        </div>
     </div>
 </div>
-
 <script>
     let isLoginMode = true;
+    let currentCustomerGlobalData = null;
+
+    // AUTOMATIC CHECKOUT CART WIPER: Activates if Stripe redirects here with a success flag
+    if (new URLSearchParams(window.location.search).get('status') === 'success') {
+        localStorage.removeItem('cc_cart_store');
+        console.log('Shopping bag reset triggered successfully.');
+    }
 
     function toggleAuthViewMode() {
         isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? 'Login' : 'Create Account';
+        document.getElementById('auth-title').innerText = isLoginMode ? 'Customer Login' : 'Create Account';
         document.getElementById('auth-submit-btn').innerText = isLoginMode ? 'Sign In' : 'Sign Up';
         document.getElementById('auth-toggle-msg').innerHTML = isLoginMode ? "Don't have an account? <span>Sign Up</span>" : "Already have an account? <span>Sign In</span>";
+        document.getElementById('signup-fields-grid').style.display = isLoginMode ? 'none' : 'block';
+        document.getElementById('signup-confirm-row').style.display = isLoginMode ? 'none' : 'block';
+    }
+
+    function toggleProfileEditFormState(editing) {
+        document.getElementById('view-profile-text').style.display = editing ? 'none' : 'block';
+        document.getElementById('frm-edit-profile').style.display = editing ? 'block' : 'none';
+        
+        if (editing && currentCustomerGlobalData) {
+            document.getElementById('edit-firstname').value = currentCustomerGlobalData.first_name || '';
+            document.getElementById('edit-lastname').value = currentCustomerGlobalData.last_name || '';
+            document.getElementById('edit-addr1').value = currentCustomerGlobalData.address_line1 || '';
+            document.getElementById('edit-addr2').value = currentCustomerGlobalData.address_line2 || '';
+            document.getElementById('edit-city').value = currentCustomerGlobalData.city || '';
+            document.getElementById('edit-state').value = currentCustomerGlobalData.state || '';
+            document.getElementById('edit-zip').value = currentCustomerGlobalData.zip_code || '';
+        }
     }
 
     async function handleAuthSubmission(e) {
         e.preventDefault();
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
+        
+        if (!isLoginMode) {
+            const confirmPass = document.getElementById('auth-confirm-password').value;
+            if (password !== confirmPass) return alert('Registration inputs rejected: Passwords do not match!');
+        }
+
         const endpoint = isLoginMode ? '/api/login' : '/api/signup';
+        const payload = { email, password };
 
-        try {
-            // FIXED: Added spaces and explicit comment layout
-            const response = await fetch('https://api.craftandcleanse.com' + endpoint, { // fix link
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+        if (!isLoginMode) {
+            payload.title = document.getElementById('reg-title').value;
+            payload.firstName = document.getElementById('reg-firstname').value;
+            payload.lastName = document.getElementById('reg-lastname').value;
+            payload.gender = document.getElementById('reg-gender').value;
+            payload.addressLine1 = document.getElementById('reg-addr1').value;
+            payload.addressLine2 = document.getElementById('reg-addr2').value;
+            payload.city = document.getElementById('reg-city').value;
+            payload.state = document.getElementById('reg-state').value;
+            payload.zipCode = document.getElementById('reg-zip').value;
+        }
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                return alert(errData.error || 'Authentication Failed.');
-            }
+        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
+        const response = await fetch('https://api.craftandcleanse.com' + endpoint, { // fix link
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-            const data = await response.json();
-            if (data.success) {
-                localStorage.setItem('cc_user_id', data.userId);
-                localStorage.setItem('cc_user_email', email);
-                window.location.reload();
-            }
-        } catch (err) {
-            alert('Database network timeout. Verify your API deployment.');
+        const data = await response.json();
+        if (data.success) {
+            localStorage.setItem('cc_user_id', data.userId);
+            localStorage.setItem('cc_user_email', email);
+            window.location.reload();
+        } else {
+            alert(data.error || 'Identity loop authentication mismatch error.');
+        }
+    }
+
+    async function executeProfileUpdateSave(e) {
+        e.preventDefault();
+        const userId = localStorage.getItem('cc_user_id');
+        
+        const payload = {
+            userId,
+            firstName: document.getElementById('edit-firstname').value,
+            lastName: document.getElementById('edit-lastname').value,
+            addressLine1: document.getElementById('edit-addr1').value,
+            addressLine2: document.getElementById('edit-addr2').value,
+            city: document.getElementById('edit-city').value,
+            state: document.getElementById('edit-state').value,
+            zipCode: document.getElementById('edit-zip').value
+        };
+
+        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
+        const response = await fetch('https://api.craftandcleanse.com/api/profile/update', { // fix link
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Profile shipping criteria updated successfully!');
+            window.location.reload();
         }
     }
 
@@ -91,9 +252,9 @@
         window.location.reload();
     }
 
-        // Wrapped safely to handle account tracking loops cleanly
     window.addEventListener('DOMContentLoaded', async () => {
         const userId = localStorage.getItem('cc_user_id');
+        const email = localStorage.getItem('cc_user_email');
         if (!userId) {
             document.getElementById('panel-auth').classList.add('active');
             return;
@@ -102,22 +263,37 @@
         document.getElementById('panel-auth').classList.remove('active');
         document.getElementById('panel-customer').classList.add('active');
         document.getElementById('nav-logout-btn').style.display = 'inline-block';
-        document.getElementById('cust-profile-id').value = userId;
+        document.getElementById('lbl-profile-email').innerText = email;
 
         try {
-            // FIXED PARSING ROUTE: Calls the database sub-lane cleanly
-            const res = await fetch('https://api.craftandcleanse.com/api/cart/load?userId=' + userId); 
-            const data = await res.json();
+            // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
+            const profileRes = await fetch('https://api.craftandcleanse.com/api/profile/load?userId=' + userId); // fix link
+            const profData = await profileRes.json();
             
-            if (data.success && data.items && data.items.length > 0) {
-                // FIXED DATA MAPPER: Maps the raw database columns to human readable text
-                document.getElementById('cust-saved-cart-box').innerHTML = data.items.map(i => {
-                    const titleName = i.product_id === 'handmade-soap' ? 'Handmade Soap' : 'Artisan Candle';
-                    return `• 1x ${titleName} (Scent: <strong>${i.variant_scent}</strong>) x${i.quantity}`;
+            if (profData.success && profData.user) {
+                currentCustomerGlobalData = profData.user;
+                document.getElementById('lbl-greet-name').innerText = `Welcome Back, ${profData.user.first_name || 'Customer'}`;
+                document.getElementById('txt-view-title').innerText = profData.user.title || 'N/A';
+                document.getElementById('txt-view-fullname').innerText = `${profData.user.first_name || ''} ${profData.user.last_name || ''}`;
+                document.getElementById('txt-view-gender').innerText = profData.user.gender || 'N/A';
+                
+                const suiteText = profData.user.address_line2 ? `, ${profData.user.address_line2}` : '';
+                document.getElementById('txt-view-address').innerText = `${profData.user.address_line1 || ''}${suiteText}\n${profData.user.city || ''}, ${profData.user.state || ''} ${profData.user.zip_code || ''}\n${profData.user.country || 'US'}`;
+            }
+
+            // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
+            const cartRes = await fetch('https://api.craftandcleanse.com/api/cart/load?userId=' + userId); // fix link
+            const cartData = await cartRes.json();
+            if (cartData.success && cartData.items && cartData.items.length > 0) {
+                document.getElementById('cust-saved-cart-box').innerHTML = cartData.items.map(i => {
+                    const labelName = i.product_id === 'handmade-soap' ? 'Handmade Soap' : 'Artisan Candle';
+                    return `• 1x ${labelName} (Scent: <strong>${i.variant_scent}</strong>) x${i.quantity}`;
                 }).join('<br>');
+            } else {
+                document.getElementById('cust-saved-cart-box').innerText = 'No items sitting in cloud memory layout slots.';
             }
         } catch (err) {
-            console.log('Account dashboard cart view sync sequence finalized.');
+            console.log('Data profile panel mapping completed.');
         }
     });
 </script>
