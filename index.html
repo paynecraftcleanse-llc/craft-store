@@ -125,7 +125,6 @@
         localStorage.setItem('cc_cart_store', JSON.stringify(currentCart));
         updateCartBadgeMetric();
         syncCartWithCloudflareDatabase(currentCart);
-        alert(productName + ' (' + chosenScent + ') successfully added to your Cart!');
     }
     function updateCartBadgeMetric() {
         const currentCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
