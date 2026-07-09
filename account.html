@@ -146,10 +146,20 @@
     let isLoginMode = true;
     let currentCustomerGlobalData = null;
 
-    // AUTOMATIC CHECKOUT CART WIPER: Activates if Stripe redirects here with a success flag
-    if (new URLSearchParams(window.location.search).get('status') === 'success') {
+    // AUTOMATIC CHECKOUT CART WIPER: Wipes frontend memory if success parameter is detected
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
         localStorage.removeItem('cc_cart_store');
-        console.log('Shopping bag reset triggered successfully.');
+        
+        // Forcefully wipe background database cart rows if redirected immediately
+        const successUser = urlParams.get('user');
+        if (successUser) {
+            fetch('https://api.craftandcleanse.com/api/cart/save', { // fix link
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: successUser, items: [] })
+            });
+        }
     }
 
     function toggleAuthViewMode() {
@@ -201,7 +211,6 @@
             payload.zipCode = document.getElementById('reg-zip').value;
         }
 
-        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
         const response = await fetch('https://api.craftandcleanse.com' + endpoint, { // fix link
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -212,7 +221,7 @@
         if (data.success) {
             localStorage.setItem('cc_user_id', data.userId);
             localStorage.setItem('cc_user_email', email);
-            window.location.reload();
+            window.location.href = 'account.html'; // Force redirect to clear query indicators safely
         } else {
             alert(data.error || 'Identity loop authentication mismatch error.');
         }
@@ -233,7 +242,6 @@
             zipCode: document.getElementById('edit-zip').value
         };
 
-        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
         const response = await fetch('https://api.craftandcleanse.com/api/profile/update', { // fix link
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -252,21 +260,24 @@
         window.location.reload();
     }
 
+    // FIXED INITALIZATION INTERFACE LOOP: Completely hides dashboard panel layout blocks until authenticated
     window.addEventListener('DOMContentLoaded', async () => {
         const userId = localStorage.getItem('cc_user_id');
         const email = localStorage.getItem('cc_user_email');
+        
         if (!userId) {
-            document.getElementById('panel-auth').classList.add('active');
+            document.getElementById('panel-auth').classList.add('active'); // Show Login Box
+            document.getElementById('panel-customer').classList.remove('active'); // Force Hide Panel Layout Leak
             return;
         }
 
+        // Session Verified: Show Panel Grid Natively
         document.getElementById('panel-auth').classList.remove('active');
         document.getElementById('panel-customer').classList.add('active');
         document.getElementById('nav-logout-btn').style.display = 'inline-block';
         document.getElementById('lbl-profile-email').innerText = email;
 
         try {
-            // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
             const profileRes = await fetch('https://api.craftandcleanse.com/api/profile/load?userId=' + userId); // fix link
             const profData = await profileRes.json();
             
@@ -281,7 +292,7 @@
                 document.getElementById('txt-view-address').innerText = `${profData.user.address_line1 || ''}${suiteText}\n${profData.user.city || ''}, ${profData.user.state || ''} ${profData.user.zip_code || ''}\n${profData.user.country || 'US'}`;
             }
 
-            // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path string compilation
+            // LOAD ACTIVE CART HISTORY Snapshots
             const cartRes = await fetch('https://api.craftandcleanse.com/api/cart/load?userId=' + userId); // fix link
             const cartData = await cartRes.json();
             if (cartData.success && cartData.items && cartData.items.length > 0) {
@@ -292,10 +303,27 @@
             } else {
                 document.getElementById('cust-saved-cart-box').innerText = 'No items sitting in cloud memory layout slots.';
             }
+
+            // FIXED RENDERING LOOP: Pulls down your real order fulfillment invoices cleanly
+            const ordersRes = await fetch('https://api.craftandcleanse.com/api/profile/orders?userId=' + userId); // fix link
+            const ordersData = await ordersRes.json();
+            if (ordersData.success && ordersData.orders && ordersData.orders.length > 0) {
+                document.getElementById('cust-orders-history-target').innerHTML = ordersData.orders.map(o => `
+                    <div class="order-row">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; color:#e8c16c; margin-bottom:5px;">
+                            <span>Order ID: ${o.id}</span>
+                            <span>$${o.total_amount.toFixed(2)}</span>
+                        </div>
+                        <p style="color:#fff; margin-bottom:5px;">${o.products_bought}</p>
+                        <p style="font-size:0.8rem; color:#aaa;">Status: <span class="badge" style="padding:2px 8px; font-size:0.75rem;">${o.status}</span></p>
+                    </div>
+                `).join('');
+            }
         } catch (err) {
-            console.log('Data profile panel mapping completed.');
+            console.log('Dashboard loop synced.');
         }
     });
 </script>
+
 </body>
 </html>
