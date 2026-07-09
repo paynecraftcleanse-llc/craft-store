@@ -180,7 +180,7 @@
         });
 
         const taxAmount = totalAmount * 0.06; 
-        const shippingFee = activeCart.length > 0 ? 15.00 : 0.00;
+        const shippingFee = activeCart.length > 0 ? 7.50 : 0.00;
         const grandTotal = totalAmount + taxAmount + shippingFee;
 
         document.getElementById('txt-subtotal').innerText = `$${totalAmount.toFixed(2)}`;
