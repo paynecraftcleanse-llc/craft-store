@@ -30,6 +30,7 @@
         .edit-icon-btn { position: absolute; top: 20px; right: 20px; color: #e8c16c; cursor: pointer; background: none; border: none; font-size: 1.1rem; }
         .dash-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .order-row { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #e8c16c; font-size: 0.9rem; }
+        .badge { padding: 4px 10px; border-radius: 12px; background: rgba(232,193,108,0.2); color: #e8c16c; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -69,7 +70,7 @@
                 <input type="text" id="reg-state" placeholder="State (e.g. MI)" maxlength="2">
                 <input type="text" id="reg-zip" placeholder="Zip Code">
             </div>
-            <input type="text" value="United States" readonly style="opacity:0.6; background:rgba(0,0,0,0.6);">
+            <input type="text" value="United States" readonly style="opacity:0.6; background:rgba(0,0,0,0.6); pointer-events:none;">
         </div>
 
         <input type="email" id="auth-email" placeholder="Email Address" required>
@@ -260,7 +261,6 @@
         window.location.reload();
     }
 
-    // FIXED INITALIZATION INTERFACE LOOP: Completely hides dashboard panel layout blocks until authenticated
     window.addEventListener('DOMContentLoaded', async () => {
         const userId = localStorage.getItem('cc_user_id');
         const email = localStorage.getItem('cc_user_email');
@@ -304,7 +304,7 @@
                 document.getElementById('cust-saved-cart-box').innerText = 'No items sitting in cloud memory layout slots.';
             }
 
-            // FIXED RENDERING LOOP: Pulls down your real order fulfillment invoices cleanly
+            // RENDERING LOOP: Pulls down your real order fulfillment invoices cleanly
             const ordersRes = await fetch('https://api.craftandcleanse.com/api/profile/orders?userId=' + userId); // fix link
             const ordersData = await ordersRes.json();
             if (ordersData.success && ordersData.orders && ordersData.orders.length > 0) {
@@ -324,6 +324,5 @@
         }
     });
 </script>
-
 </body>
 </html>
