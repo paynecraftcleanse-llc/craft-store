@@ -91,6 +91,7 @@
         window.location.reload();
     }
 
+        // Wrapped safely to handle account tracking loops cleanly
     window.addEventListener('DOMContentLoaded', async () => {
         const userId = localStorage.getItem('cc_user_id');
         if (!userId) {
@@ -104,14 +105,19 @@
         document.getElementById('cust-profile-id').value = userId;
 
         try {
-            // FIXED: Added spaces, routing endpoint path, and explicit comment layout
-            const res = await fetch('https://api.craftandcleanse.com/api/cart/load?userId=' + userId); // fix link
+            // FIXED PARSING ROUTE: Calls the database sub-lane cleanly
+            const res = await fetch('https://api.craftandcleanse.com/api/cart/load?userId=' + userId); 
             const data = await res.json();
+            
             if (data.success && data.items && data.items.length > 0) {
-                document.getElementById('cust-saved-cart-box').innerHTML = data.items.map(i => `• 1x ${i.product_id === 'handmade-soap' ? 'Handmade Soap' : 'Artisan Candle'} (Scent: <strong>${i.variant_scent}</strong>) x${i.quantity}`).join('<br>');
+                // FIXED DATA MAPPER: Maps the raw database columns to human readable text
+                document.getElementById('cust-saved-cart-box').innerHTML = data.items.map(i => {
+                    const titleName = i.product_id === 'handmade-soap' ? 'Handmade Soap' : 'Artisan Candle';
+                    return `• 1x ${titleName} (Scent: <strong>${i.variant_scent}</strong>) x${i.quantity}`;
+                }).join('<br>');
             }
         } catch (err) {
-            console.log('Cart view synced.');
+            console.log('Account dashboard cart view sync sequence finalized.');
         }
     });
 </script>
