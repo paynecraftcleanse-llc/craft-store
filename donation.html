@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support C&C | Contribution Hub</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top,#1b1f3a,#05060b); color: #f5e7c8; font-family: "Inter", sans-serif; padding: 20px; }
+        
+        /* Navigation Bar Layout */
+        nav { width: 92%; margin: 25px auto 40px auto; padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.06); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(232,193,108,.25); box-shadow: 0 0 30px rgba(232,193,108,.2); }
+        nav a { color: white; text-decoration: none; font-family: "Cinzel", serif; font-weight: 500; transition: 0.3s; }
+        nav a:hover { color: #e8c16c; }
+
+        /* Main Structural Card Wrapper */
+        .donate-card { width: 100%; max-width: 550px; margin: 40px auto; background: rgba(255,255,255,.04); border: 1px solid rgba(232,193,108,.25); padding: 40px 35px; border-radius: 30px; backdrop-filter: blur(25px); box-shadow: 0 0 50px rgba(232,193,108,.15); text-align: center; }
+        .support-icon { font-size: 3.5rem; color: #e8c16c; margin-bottom: 20px; text-shadow: 0 0 25px rgba(232,193,108,0.4); }
+        h1 { font-family: "Cinzel", serif; color: #e8c16c; font-size: 2.2rem; margin-bottom: 10px; }
+        .subtitle { font-family: "Cormorant Garamond", serif; font-size: 1.3rem; color: #bbb; margin-bottom: 30px; line-height: 1.5; }
+        
+        /* Rigid Compliance Disclosure Rule Box */
+        .rules-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(232,193,108,0.15); border-radius: 15px; padding: 22px; text-align: left; margin-bottom: 30px; font-size: 0.9rem; line-height: 1.6; color: #ddd; }
+        .rules-box h3 { font-family: "Cinzel", serif; font-size: 0.85rem; color: #e8c16c; margin-bottom: 12px; letter-spacing: 1px; border-bottom: 1px solid rgba(232,193,108,0.15); padding-bottom: 6px; }
+        .rule-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; }
+        .rule-item i { color: #e8c16c; margin-top: 4px; font-size: 0.8rem; }
+        .rule-item span strong { color: #fff; }
+
+        /* Metallic Gold Action Button Link */
+        .btn { display: inline-block; width: 100%; text-align: center; padding: 14px; background: #e8c16c; color: #05060b; border: none; border-radius: 50px; font-weight: 600; text-decoration: none; cursor: pointer; transition: 0.3s; font-family: "Inter", sans-serif; box-shadow: 0 0 20px rgba(232,193,108,0.2); }
+        .btn:hover { box-shadow: 0 0 35px #e8c16c; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html">← Back to Store</a>
+    <div style="color:#e8c16c; font-family:'Cinzel'; font-size:1.1rem; font-weight:700;">Support Hub</div>
+    <a href="account.html">Account</a>
+</nav>
+
+<div class="donate-card">
+    <div class="support-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+    <h1>Support Our Work</h1>
+    <p class="subtitle">Your direct funding helps our team keep hand-pouring authentic soaps and clean-burning candles using traditional processing steps.</p>
+    
+    <!-- Legal Protections Compliance Rule Box -->
+    <div class="rules-box">
+        <h3>CONTRIBUTION DISCLOSURE RULES</h3>
+        
+        <div class="rule-item">
+            <i class="fa-solid fa-angle-right"></i>
+            <span><strong>For-Profit Entity:</strong> Payne Craft & Cleanse LLC is a registered for-profit business. We are not a 501(c)(3) charity.</span>
+        </div>
+        
+        <div class="rule-item">
+            <i class="fa-solid fa-angle-right"></i>
+            <span><strong>Zero Tax Deductions:</strong> This transaction cannot be claimed as a tax write-off or charitable donation on your returns.</span>
+        </div>
+        
+        <div class="rule-item">
+            <i class="fa-solid fa-angle-right"></i>
+            <span><strong>No Goods or Services:</strong> This channel is strictly for optional, voluntary support. It grants zero products, soaps, or candles.</span>
+        </div>
+        
+        <div class="rule-item">
+            <i class="fa-solid fa-angle-right"></i>
+            <span><strong>100% Non-Refundable:</strong> All submissions are permanent and completely non-refundable once authorized.</span>
+        </div>
+    </div>
+
+    <!-- LIVE STRIPE LINK INPUT FIELD CORE -->
+    <!-- Swap the text below with your actual live payment link string -->
+    <a href="https://donate.stripe.com/5kQaEWcz6aPb88G33G2Ry00" class="btn">Proceed to Secure Link</a>
+</div>
+
+</body>
+</html>
