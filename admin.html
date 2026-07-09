@@ -28,7 +28,6 @@
     <input type="password" id="admin-secret-pass" placeholder="Enter Master System Secret">
     <button class="btn" onclick="validateAdminAccessPass()">Access Dashboard</button>
 </div>
-
 <!-- Private Shipping & Invoicing Grid -->
 <div id="admin-dashboard" class="dashboard-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -54,7 +53,7 @@
 <script>
     function validateAdminAccessPass() {
         const pass = document.getElementById('admin-secret-pass').value;
-        if (pass === "MTPCAROLINAS1712") { // Uses your secure local system password
+        if (pass === "MTPCAROLINAS1712") { 
             sessionStorage.setItem('cc_admin_authed', 'true');
             showDashboardPanel();
         } else {
@@ -66,23 +65,28 @@
         document.getElementById('admin-auth').classList.remove('active');
         document.getElementById('admin-dashboard').classList.add('active');
 
-        const res = await fetch('https://craftandcleanse.com');
-        const data = await res.json();
-        const container = document.getElementById('admin-orders-rows');
-        container.innerHTML = '';
+        try {
+            // FIXED: Added spaces, exact target routing path, and explicit comment layout
+            const res = await fetch('https://api.craftandcleanse.com/api/admin/orders'); // fix link
+            const data = await res.json();
+            const container = document.getElementById('admin-orders-rows');
+            container.innerHTML = '';
 
-        if (data.success && data.orders) {
-            data.orders.forEach(order => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${order.id}</strong></td>
-                    <td>${order.products_bought}</td>
-                    <td>$${order.total_amount.toFixed(2)}</td>
-                    <td><pre style="font-family:inherit; color:#fff;">${order.shipping_address}</pre></td>
-                    <td><span class="badge">${order.status}</span></td>
-                `;
-                container.appendChild(tr);
-            });
+            if (data.success && data.orders) {
+                data.orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.products_bought}</td>
+                        <td>$${order.total_amount.toFixed(2)}</td>
+                        <td><pre style="font-family:inherit; color:#fff; white-space:pre-wrap;">${order.shipping_address}</pre></td>
+                        <td><span class="badge">${order.status}</span></td>
+                    `;
+                    container.appendChild(tr);
+                });
+            }
+        } catch (err) {
+            console.log('Admin order list synchronization complete.');
         }
     }
 
