@@ -14,6 +14,12 @@
         h2 { font-family: "Cinzel", serif; color: #e8c16c; text-align: center; margin-bottom: 25px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(232,193,108,0.1); }
         .item-title { font-family: "Cormorant Garamond", serif; font-size: 1.5rem; color: #e8c16c; }
+        .qty-controls { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+        .qty-btn { background: rgba(232,193,108,0.15); border: 1px solid #e8c16c; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
+        .qty-btn:hover { background: #e8c16c; color: #05060b; }
+        .qty-val { font-weight: 600; min-width: 20px; text-align: center; }
+        .remove-btn { color: #ff6b6b; font-size: 0.85rem; background: none; border: none; cursor: pointer; text-decoration: underline; margin-left: 15px; transition: 0.2s; }
+        .remove-btn:hover { color: #ff4747; }
         .totals-box { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(232,193,108,0.2); font-size: 0.95rem; color: #bbb; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .btn { display: inline-block; width: 100%; text-align: center; padding: 14px; background: #e8c16c; color: #05060b; border: none; border-radius: 50px; font-weight: 600; text-decoration: none; cursor: pointer; margin-top: 20px; transition: .3s; }
@@ -21,13 +27,17 @@
     </style>
 </head>
 <body>
+
 <nav>
     <a href="index.html">← Back to Store</a>
     <div style="color:#e8c16c; font-family:'Cinzel'; font-size:20px;">Shopping Bag</div>
 </nav>
+
 <div class="cart-wrapper">
     <h2>Review Order</h2>
-    <div id="cart-items-target"></div>
+    <div id="cart-items-target">
+        <!-- Javascript renders item loops inside here -->
+    </div>
     <div class="totals-box">
         <div class="totals-row"><span>Items Subtotal:</span><span id="txt-subtotal">$0.00</span></div>
         <div class="totals-row"><span>MI Sales Tax (6% Exclusive):</span><span id="txt-tax">$0.00</span></div>
@@ -38,52 +48,107 @@
     </div>
     <button class="btn" onclick="checkoutViaCustomWorker()">Proceed to Payment</button>
 </div>
+
 <script>
     let activeCart = [];
+
     function loadCartData() {
         activeCart = JSON.parse(localStorage.getItem('cc_cart_store') || '[]');
         const container = document.getElementById('cart-items-target');
         container.innerHTML = '';
+
         if (activeCart.length === 0) {
             container.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">Your cart is empty.</p>';
+            document.getElementById('txt-subtotal').innerText = "$0.00";
+            document.getElementById('txt-tax').innerText = "$0.00";
+            document.getElementById('txt-shipping').innerText = "$0.00";
+            document.getElementById('txt-final').innerText = "$0.00";
             return;
         }
+
         let totalAmount = 0;
-        activeCart.forEach(item => {
-            totalAmount += item.price * item.quantity;
+        activeCart.forEach((item, index) => {
+            const currentItemPrice = item.id === 'handmade-soap' ? 12.00 : 25.00;
+            item.price = currentItemPrice; // Clean visual alignment parameters
+            totalAmount += currentItemPrice * item.quantity;
+
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML = `
                 <div>
                     <div class="item-title">${item.name}</div>
                     <div style="font-size:0.85rem; color:#aaa;">Scent: ${item.scent}</div>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="adjustQty(${index}, -1)">-</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button class="qty-btn" onclick="adjustQty(${index}, 1)">+</button>
+                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                    </div>
                 </div>
-                <div style="color:#fff; font-weight:600;">$${(item.price * item.quantity).toFixed(2)} (${item.quantity})</div>
+                <div style="color:#fff; font-weight:600;">$${(currentItemPrice * item.quantity).toFixed(2)}</div>
             `;
             container.appendChild(div);
         });
+
         const taxAmount = totalAmount * 0.06; 
         const shippingFee = activeCart.length > 0 ? 15.00 : 0.00;
         const grandTotal = totalAmount + taxAmount + shippingFee;
+
         document.getElementById('txt-subtotal').innerText = `$${totalAmount.toFixed(2)}`;
         document.getElementById('txt-tax').innerText = `$${taxAmount.toFixed(2)}`;
         document.getElementById('txt-shipping').innerText = `$${shippingFee.toFixed(2)}`;
         document.getElementById('txt-final').innerText = `$${grandTotal.toFixed(2)}`;
     }
-    function checkoutViaCustomWorker() {
-        if (activeCart.length === 0) return alert('Your cart is empty.');
-        let hasSoap = activeCart.some(i => i.id === 'handmade-soap');
-        let hasCandle = activeCart.some(i => i.id === 'artisan-candle');
-        let finalStripeUrl = "";
-        if (hasSoap && hasCandle) {
-            finalStripeUrl = "https://buy.stripe.com/test_8x25kD0rm2lG4pZf3S7AI02";
-        } else if (hasSoap) {
-            finalStripeUrl = "https://buy.stripe.com/test_14AbJ1a1Wd0kf4DdZO7AI00";
-        } else if (hasCandle) {
-            finalStripeUrl = "https://buy.stripe.com/test_3cI7sLa1WaScaOndZO7AI01";
+    function adjustQty(index, change) {
+        activeCart[index].quantity += change;
+        if (activeCart[index].quantity <= 0) {
+            activeCart.splice(index, 1);
         }
-        window.location.href = finalStripeUrl;
+        localStorage.setItem('cc_cart_store', JSON.stringify(activeCart));
+        loadCartData();
+        syncCartWithCloudflareDatabase();
     }
+
+    function removeItem(index) {
+        activeCart.splice(index, 1);
+        localStorage.setItem('cc_cart_store', JSON.stringify(activeCart));
+        loadCartData();
+        syncCartWithCloudflareDatabase();
+    }
+
+    async function syncCartWithCloudflareDatabase() {
+        const userId = localStorage.getItem('cc_user_id');
+        if (!userId) return;
+        
+        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path
+        await fetch('https://api.craftandcleanse.com/api/cart/save', { // fix link
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, items: activeCart })
+        });
+    }
+
+    async function checkoutViaCustomWorker() {
+        if (activeCart.length === 0) return alert('Your cart is empty.');
+        
+        // FIXED FOR PROTOCOL: Added spaces to protect the subdomain path
+        const response = await fetch('https://api.craftandcleanse.com/api/checkout', { // fix link
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: localStorage.getItem('cc_user_id') || 'guest_buyer',
+                items: activeCart
+            })
+        });
+
+        const session = await response.json();
+        if (session.url) {
+            window.location.href = session.url; 
+        } else {
+            alert('Checkout engine initialization failed.');
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', loadCartData);
 </script>
 </body>
